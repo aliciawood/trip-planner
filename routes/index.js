@@ -59,6 +59,9 @@ router.post('/adduser', function(req, res) {
 
 
 router.get('/inputfortrip', function(req, res) {
+
+    var trip = new Trip(req.db);
+    trip.generateTrip();
     res.render('inputfortrip', { title: 'Enter Input for Trip' });
 });
 
