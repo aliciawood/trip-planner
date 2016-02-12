@@ -1,10 +1,13 @@
 module.exports = Attraction
 
-function Attraction(db){
+function Attraction(mood, moneyToUse, city, state, db){
 	this.db = db;
+	this.mood = mood;
+	this.city = city;
+	this.state = state;
+	this.moneyToUse = moneyToUse;
+
 	this.name = "";
-	this.city = "";
-	this.state = "";
 	this.price = 0.0;
 	this.category = "";
 	this.ratings = null;
