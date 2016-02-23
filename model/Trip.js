@@ -73,7 +73,9 @@ Trip.prototype.generateTrip = function() {
         "hotellist": this.hotels,
         "attractionlist": this.attractions,
         "city":this.city,
-        "state":this.state
+        "state":this.state,
+        "money":this.budget,
+        "mood":this.mood
     });
 	
 
