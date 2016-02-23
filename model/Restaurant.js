@@ -1,23 +1,19 @@
+// var wrap = require('co-monk');
+
 module.exports = Restaurant
 
-function Restaurant(mood, city, state, db){
-	this.db = db;
+function Restaurant(mood, city, state, restaurants){
+	this.restaurants = restaurants
 	this.mood = mood;
 	this.city = city;
 	this.state = state;
 
-	this.name = "";
-	this.genre = "";
-	this.ratings = null;
-
-
-	// var collection = db.get('usercollection');
-	// collection.find({},{},function(e,docs){
- //        res.render('userlist', {
- //            "userlist" : docs
- //        });
- //    });
 	
+    var rand = Math.floor(Math.random() * this.restaurants.length);
+	var randomRestaurant = this.restaurants[rand];
+	this.name = randomRestaurant.name;
+	this.genre = randomRestaurant.genre;
+	this.ratings = randomRestaurant.rating;
 
 }
 

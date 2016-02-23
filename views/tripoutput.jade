@@ -1,0 +1,23 @@
+extends layout
+block content
+  h1.
+    Trip to !{city}, !{state}
+
+  h2.
+    Restaurants
+  ul
+    each user, i in restaurantlist
+      li= user.name
+
+  h2.
+    Attractions
+  ul
+    each attraction, i in attractionlist
+      li= attraction.name
+
+
+  h2.
+    Hotel
+  ul
+    each hotel, i in hotellist
+      li= hotel.name

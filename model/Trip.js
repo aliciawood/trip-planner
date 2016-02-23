@@ -2,35 +2,60 @@ module.exports = Trip
 
 var Restaurant = require("./Restaurant"),
 	Attraction = require("./Attraction"),
-	Hotel = require("./Hotel");
+	Hotel = require("./Hotel"),
+	assert = require('assert');
 
-function Trip(db){
+function Trip(db, budget, mood, res){
 	this.db = db;
+	this.budget = budget;
+	this.mood = mood;
+	this.res = res;
+	
 	this.placeName = "";
 	this.city = "";
 	this.state = "";
-	this.mood = "";
-	this.budget = 0.0;
 	this.restaurants = [];
 	this.hotels = [];
 	this.attractions = [];
 	this.picture = null;
 	this.numDays = 4;
 
-	// var collection = db.get('tripPlanner');
-	// collection.find({},{},function(e,docs){
- //        res.render('userlist', {
- //            "userlist" : docs
- //        });
- //    });
+	
+	this.restaurantsQueried = null;
+	this.hotelsQueried = null;
+	this.attractionsQueried = null;
 
+
+	var curr = this;
+	var collection1 = db.get("restaurants");
+    collection1.find({},{},function(e,docs){
+    	curr.restaurantsQueried = docs;
+    	curr.complete();
+    });
+
+
+    var collection2 = db.get("hotels");
+    collection2.find({},{},function(e,docs){
+    	curr.hotelsQueried = docs;
+    	curr.complete();
+    });
+
+    var collection3 = db.get("attractions");
+    collection3.find({},{},function(e,docs){
+    	curr.attractionsQueried = docs;
+    	curr.complete();
+    });
+
+
+}
+Trip.prototype.complete = function(){
+	if(this.restaurantsQueried!=null && this.attractionsQueried!=null && this.hotelsQueried!=null){
+		this.generateTrip()
+	}
 }
 
 
-Trip.prototype.generateTrip = function(budget,mood) {
-	console.log("GENERATING A TRIP!: $"+budget+", and mood: ",mood);
-	this.budget = budget;
-	this.mood = mood;
+Trip.prototype.generateTrip = function() {
 	
 
 	//figure out how to split up budget between attractions and lodging.....
@@ -43,43 +68,44 @@ Trip.prototype.generateTrip = function(budget,mood) {
 	this.generateAttractions(moneyForAttractions);
 	this.generateHotels(moneyForHotels);
 
+	this.res.render('tripoutput', {
+        "restaurantlist" : this.restaurants,
+        "hotellist": this.hotels,
+        "attractionlist": this.attractions,
+        "city":this.city,
+        "state":this.state
+    });
+	
+
 };
 
 Trip.prototype.generateLocation = function(){
-	console.log("GENERATING A LOCATION!");
 	this.city = "Provo";
 	this.state = "UT";
-	console.log("CITY: ",this.city);
-	console.log("STATE: ",this.state);
-
-
 	//wikipedia info
 	//other sites
 }
 
 
 Trip.prototype.generateRestaurants = function(){
-	console.log("GENERATING RESTAURANTS!");
 	for(var i=0; i<(this.numDays*2); i++){
-		var newRestaurant = new Restaurant(this.mood, this.city, this.state, this.db);
+		var newRestaurant = new Restaurant(this.mood, this.city, this.state, this.restaurantsQueried);
 		this.restaurants.push(newRestaurant);
 	}
 }
 
 Trip.prototype.generateAttractions = function(money){
-	console.log("GENERATING ATTRACTIONS WITH: $"+money+"!");
 	var moneyPerAttraction = money/(this.numDays*2);
 	for(var i=0; i<(this.numDays*2); i++){
-		var newAttraction = new Attraction(this.mood, moneyPerAttraction, this.city, this.state, this.db);
+		var newAttraction = new Attraction(this.mood, moneyPerAttraction, this.city, this.state, this.attractionsQueried);
 		this.attractions.push(newAttraction);
 	}
 }
 
 Trip.prototype.generateHotels = function(money){
-	console.log("GENERATING HOTELS WITH: $"+money+"!");
 	var moneyPerHotel = money/(this.numDays);
 	for(var i=0; i<this.numDays; i++){
-		var newHotel = new Hotel(this.mood, moneyPerHotel, this.city, this.state, this.db);
+		var newHotel = new Hotel(this.mood, moneyPerHotel, this.city, this.state, this.hotelsQueried);
 		this.hotels.push(newHotel);
 	}
 	

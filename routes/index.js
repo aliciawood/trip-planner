@@ -65,10 +65,7 @@ router.post('/addinput', function(req, res) {
     var budget = req.body.budget;
     var mood = req.body.mood;
 
-    var trip = new Trip(req.db);
-    trip.generateTrip(budget,mood);
-
-    res.redirect("displaytrip");
+    var trip = new Trip(req.db, budget, mood, res);
 });
 
 
@@ -82,8 +79,8 @@ router.get('/displaytrip', function(req, res) {
     var db = req.db;
     var collection = db.get('restaurants');
     collection.find({},{},function(e,docs){
-        res.render('userlist', {
-            "userlist" : docs
+        res.render('restaurantlist', {
+            "restaurantlist" : docs
         });
     });
 
