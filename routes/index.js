@@ -88,4 +88,10 @@ router.get('/displaytrip', function(req, res) {
 
 });
 
+router.get('/displayGoogleMaps', function(req, res) {
+    //var city = req.session.city;
+    //var state = req.session.state;
+    res.render('googleMaps', { title: 'Google Maps data' });
+});
+
 module.exports = router;
