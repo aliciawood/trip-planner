@@ -44,6 +44,13 @@ block content
             map: displayMap,
             position: newlocation
           });
+
+          var infowindow = new google.maps.InfoWindow();
+          google.maps.event.addListener(marker, 'click', function() {
+            infowindow.setContent(address);
+            infowindow.open(displayMap, this);
+          });
+
           updatePoints(displayMap)
 
         } else {
@@ -59,8 +66,9 @@ block content
         list.innerHTML = '';
         for (var i = 0; i < results.length; i++) {
           var place = results[i];
-          console.log(place);
+          //console.log(place);
           updateRestaurants(place);
+          createMarker(place, displayMap);
         }
       }
     }
@@ -80,4 +88,18 @@ block content
       };
       service = new google.maps.places.PlacesService(displayMap);
       service.nearbySearch(request, callback);
+    }
+
+    function createMarker(place, map) {
+      var placeLoc = place.geometry.location;
+      var marker = new google.maps.Marker({
+        map: map,
+        position: place.geometry.location
+      });
+
+      var infowindow = new google.maps.InfoWindow();
+      google.maps.event.addListener(marker, 'click', function() {
+        infowindow.setContent(place.name);
+        infowindow.open(map, this);
+      });
     }
