@@ -19,6 +19,8 @@ block content
   div(id='map', style='width:100%; height:500px; position:"absolute"')
 
   script(src='https://maps.googleapis.com/maps/api/js?key=AIzaSyBoVd2ZjQYOF-zqqAC1-llMfLF7nuT7Sw8&libraries=places')
+  script 
+    include ../model/GeneticAlgorithm.js
   script.
     var displayMap;
     var service;
@@ -66,7 +68,6 @@ block content
         list.innerHTML = '';
         for (var i = 0; i < results.length; i++) {
           var place = results[i];
-          //console.log(place);
           updateRestaurants(place);
           createMarker(place, displayMap);
         }
