@@ -5,32 +5,62 @@ var Restaurant = require("./Restaurant"),
 	Hotel = require("./Hotel"),
 	assert = require('assert');
 
-function TripGenerator(place, restaurants, hotels, attractions){
+function TripGenerator(db, budget, mood, res){
+	this.db = db;
+	this.budget = budget;
+	this.mood = mood;
+	this.res = res;
 	
-	this.place = place;
-	this.restaurants = restaurants;
-	this.hotels = hotels;
-	this.attractions = attractions;
+	this.placeName = "";
+	this.city = "";
+	this.state = "";
+	this.restaurants = [];
+	this.hotels = [];
+	this.attractions = [];
 	this.picture = null;
 	this.numDays = 4;
 
+	
+	this.restaurantsQueried = null;
+	this.hotelsQueried = null;
+	this.attractionsQueried = null;
+
+
+	var curr = this;
+	var collection1 = db.get("restaurants");
+    collection1.find({},{},function(e,docs){
+    	curr.restaurantsQueried = docs;
+    	curr.complete();
+    });
+
+
+    var collection2 = db.get("hotels");
+    collection2.find({},{},function(e,docs){
+    	curr.hotelsQueried = docs;
+    	curr.complete();
+    });
+
+    var collection3 = db.get("attractions");
+    collection3.find({},{},function(e,docs){
+    	curr.attractionsQueried = docs;
+    	curr.complete();
+    });
+
 
 }
-
 TripGenerator.prototype.complete = function(){
-	this.initialize();
+	if(this.restaurantsQueried!=null && this.attractionsQueried!=null && this.hotelsQueried!=null){
+		this.generateTrip()
+	}
 }
 
 
-TripGenerator.prototype.initialize = function() {
+TripGenerator.prototype.generateTrip = function() {
+	
 
-	//making population
-	var population = [];
-	for(var i = 0; i < 10; i++) {
-		var trip = [];
-		
-
-	}
+	//figure out how to split up budget between attractions and lodging.....
+	var moneyForAttractions = this.budget/2.0;
+	var moneyForHotels = this.budget/2.0;
 
 	this.generateLocation();
 

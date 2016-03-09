@@ -1,6 +1,6 @@
 var express = require('express');
 var router = express.Router();
-var Trip = require('../model/Trip');
+var TripGenerator = require('../model/TripGenerator');
 
 /* GET home page. */
 router.get('/', function(req, res, next) {
@@ -65,7 +65,7 @@ router.post('/addinput', function(req, res) {
     var budget = req.body.budget;
     var mood = req.body.mood;
 
-    var trip = new Trip(req.db, budget, mood, res);
+    var trip = new TripGenerator(req.db, budget, mood, res);
 });
 
 

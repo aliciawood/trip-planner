@@ -5,79 +5,31 @@ var Restaurant = require("./Restaurant"),
 	Hotel = require("./Hotel"),
 	assert = require('assert');
 
-function Trip(db, budget, mood, res){
-	this.db = db;
-	this.budget = budget;
-	this.mood = mood;
-	this.res = res;
-	
-	this.placeName = "";
-	this.city = "";
-	this.state = "";
-	this.restaurants = [];
-	this.hotels = [];
-	this.attractions = [];
-	this.picture = null;
+function Trip(numberofRestaurants, numberofHotels, numberofAttractions){
+
+	this.numRestaurants = numberofRestaurants;
+	this.numHotels = numberofHotels;
+	this.numAttractions = numberofAttractions;
 	this.numDays = 4;
 
-	
-	this.restaurantsQueried = null;
-	this.hotelsQueried = null;
-	this.attractionsQueried = null;
-
-
-	var curr = this;
-	var collection1 = db.get("restaurants");
-    collection1.find({},{},function(e,docs){
-    	curr.restaurantsQueried = docs;
-    	curr.complete();
-    });
-
-
-    var collection2 = db.get("hotels");
-    collection2.find({},{},function(e,docs){
-    	curr.hotelsQueried = docs;
-    	curr.complete();
-    });
-
-    var collection3 = db.get("attractions");
-    collection3.find({},{},function(e,docs){
-    	curr.attractionsQueried = docs;
-    	curr.complete();
-    });
-
+	this.geneLength = numberofRestaurants + numberofHotels + numberofAttractions;
+	this.trip = [];
+	this.trip.apply(null, Array(5)).map(Number.prototype.valueOf, 0);
 
 }
+
 Trip.prototype.complete = function(){
-	if(this.restaurantsQueried!=null && this.attractionsQueried!=null && this.hotelsQueried!=null){
-		this.generateTrip()
-	}
+	this.generateTrip();
 }
 
 
 Trip.prototype.generateTrip = function() {
 	
-
-	//figure out how to split up budget between attractions and lodging.....
-	var moneyForAttractions = this.budget/2.0;
-	var moneyForHotels = this.budget/2.0;
-
-	this.generateLocation();
+	//this.generateLocation();
 
 	this.generateRestaurants();
-	this.generateAttractions(moneyForAttractions);
-	this.generateHotels(moneyForHotels);
-
-	this.res.render('tripoutput', {
-        "restaurantlist" : this.restaurants,
-        "hotellist": this.hotels,
-        "attractionlist": this.attractions,
-        "city":this.city,
-        "state":this.state,
-        "money":this.budget,
-        "mood":this.mood
-    });
-	
+	this.generateHotel();
+	this.generateAttractions(moneyForAttractions);	
 
 };
 
@@ -88,12 +40,22 @@ Trip.prototype.generateLocation = function(){
 	//other sites
 }
 
+//generators
 
 Trip.prototype.generateRestaurants = function(){
+	var startRestaurantIndex = 0;
+	var endRestaurantIndex = this.numRestaurants;
 	for(var i=0; i<(this.numDays*2); i++){
-		var newRestaurant = new Restaurant(this.mood, this.city, this.state, this.restaurantsQueried);
-		this.restaurants.push(newRestaurant);
+		var randomRestaurantIndex = Math.random() * (endRestaurantIndex - startRestaurantIndex) + startRestaurantIndex;
+		this.trip[randomRestaurantIndex] = 1;
 	}
+}
+
+Trip.prototype.generateHotel = function(){
+	var startHotelIndex = this.numRestaurants;
+	var endHotelIndex = this.numHotels;
+	var randomRestaurantIndex = Math.random() * (endRestaurantIndex - startRestaurantIndex) + startRestaurantIndex;
+	this.trip[randomRestaurantIndex] = 1;
 }
 
 Trip.prototype.generateAttractions = function(money){
@@ -104,11 +66,34 @@ Trip.prototype.generateAttractions = function(money){
 	}
 }
 
-Trip.prototype.generateHotels = function(money){
-	var moneyPerHotel = money/(this.numDays);
-	for(var i=0; i<this.numDays; i++){
-		var newHotel = new Hotel(this.mood, moneyPerHotel, this.city, this.state, this.hotelsQueried);
-		this.hotels.push(newHotel);
-	}
-	
+// getters
+
+Trip.prototype.getRestaurants = function(){
+	var restaurants = this.trip.slice(0,this.numberofRestaurants);
+	return restaurants;
+}
+
+Trip.prototype.getHotels = function(){
+	var endAttractions = this.numberofRestaurants + this.numberofHotels + this.numberofAttractions;
+		
+}
+
+Trip.prototype.getAttractions = function(){
+	var attractions = this.trip.slice(this.numberofRestaurants, )
+}
+
+// setters
+
+Trip.prototype.setRestaurants = function(){
+	var restaurants = this.trip.slice(0,this.numberofRestaurants);
+	return restaurants;
+}
+
+Trip.prototype.setHotels = function(hotels){
+	var endAttractions = this.numberofRestaurants + this.numberofHotels + this.numberofAttractions;
+		
+}
+
+Trip.prototype.setAttractions = function(){
+	var attractions = this.trip.slice(this.numberofRestaurants, )
 }
