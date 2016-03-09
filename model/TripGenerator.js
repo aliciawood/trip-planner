@@ -3,6 +3,7 @@ module.exports = TripGenerator
 var Restaurant = require("./Restaurant"),
 	Attraction = require("./Attraction"),
 	Hotel = require("./Hotel"),
+	Population = require("./Population"),
 	assert = require('assert');
 
 function TripGenerator(db, budget, mood, res){
@@ -46,11 +47,11 @@ function TripGenerator(db, budget, mood, res){
     	curr.complete();
     });
 
-
 }
 TripGenerator.prototype.complete = function(){
 	if(this.restaurantsQueried!=null && this.attractionsQueried!=null && this.hotelsQueried!=null){
-		this.generateTrip()
+		var population = new Population(10);
+		this.generateTrip();
 	}
 }
 

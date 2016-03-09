@@ -13,8 +13,7 @@ function Trip(numberofRestaurants, numberofHotels, numberofAttractions){
 	this.numDays = 4;
 
 	this.geneLength = numberofRestaurants + numberofHotels + numberofAttractions;
-	this.trip = [];
-	this.trip.apply(null, Array(5)).map(Number.prototype.valueOf, 0);
+	this.trip = Array.apply(null, Array(5)).map(Number.prototype.valueOf, 0);
 
 }
 
@@ -23,13 +22,14 @@ Trip.prototype.complete = function(){
 }
 
 
-Trip.prototype.generateTrip = function() {
+Trip.prototype.createRandomTrip = function() {
 	
 	//this.generateLocation();
 
 	this.generateRestaurants();
 	this.generateHotel();
-	this.generateAttractions(moneyForAttractions);	
+	this.generateAttractions();
+	console.log(this.trip.toString());	
 
 };
 
@@ -54,46 +54,47 @@ Trip.prototype.generateRestaurants = function(){
 Trip.prototype.generateHotel = function(){
 	var startHotelIndex = this.numRestaurants;
 	var endHotelIndex = this.numHotels;
-	var randomRestaurantIndex = Math.random() * (endRestaurantIndex - startRestaurantIndex) + startRestaurantIndex;
-	this.trip[randomRestaurantIndex] = 1;
+	var randomHotelIndex = Math.random() * (endHotelIndex - startHotelIndex) + startHotelIndex;
+	this.trip[randomHotelIndex] = 1;
 }
 
-Trip.prototype.generateAttractions = function(money){
-	var moneyPerAttraction = money/(this.numDays*2);
+Trip.prototype.generateAttractions = function(){
+	var startAttractionIndex = this.numHotels + this.numRestaurants;
+	var endAttractionIndex = this.trip.length;
 	for(var i=0; i<(this.numDays*2); i++){
-		var newAttraction = new Attraction(this.mood, moneyPerAttraction, this.city, this.state, this.attractionsQueried);
-		this.attractions.push(newAttraction);
+		var randomAttractionIndex = Math.random() * (endAttractionIndex - startAttractionIndex) + startAttractionIndex;
+		this.trip[randomAttractionIndex] = 1;
 	}
 }
 
-// getters
+// getters --> need to check if this is what you want! --> return array of indexes, or whole chunk?
 
 Trip.prototype.getRestaurants = function(){
-	var restaurants = this.trip.slice(0,this.numberofRestaurants);
+	var restaurants = this.trip.slice(0,this.numRestaurants);
 	return restaurants;
 }
 
 Trip.prototype.getHotels = function(){
-	var endAttractions = this.numberofRestaurants + this.numberofHotels + this.numberofAttractions;
+	var endAttractions = this.numRestaurants + this.numHotels + this.numAttractions;
 		
 }
 
 Trip.prototype.getAttractions = function(){
-	var attractions = this.trip.slice(this.numberofRestaurants, )
+	var attractions = this.trip.slice(this.numRestaurants, this.numAttractions);
 }
 
 // setters
 
 Trip.prototype.setRestaurants = function(){
-	var restaurants = this.trip.slice(0,this.numberofRestaurants);
+	var restaurants = this.trip.slice(0,this.numRestaurants);
 	return restaurants;
 }
 
 Trip.prototype.setHotels = function(hotels){
-	var endAttractions = this.numberofRestaurants + this.numberofHotels + this.numberofAttractions;
+	var endAttractions = this.numRestaurants + this.numHotels + this.numAttractions;
 		
 }
 
 Trip.prototype.setAttractions = function(){
-	var attractions = this.trip.slice(this.numberofRestaurants, )
+	var attractions = this.trip.slice(this.numRestaurants, this.numAttractions);
 }
