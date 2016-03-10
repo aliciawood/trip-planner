@@ -50,7 +50,7 @@ function TripGenerator(db, budget, mood, res){
 }
 TripGenerator.prototype.complete = function(){
 	if(this.restaurantsQueried!=null && this.attractionsQueried!=null && this.hotelsQueried!=null){
-		var population = new Population(10);
+		var population = new Population(1, this.restaurantsQueried.length, this.hotelsQueried.length, this.attractionsQueried.length);
 		this.generateTrip();
 	}
 }

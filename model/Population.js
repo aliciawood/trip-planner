@@ -6,22 +6,20 @@ var Trip = require("./Trip"),
 	Hotel = require("./Hotel"),
 	assert = require('assert');
 
-function Population(populationSize){
+function Population(populationSize, numberofRestaurants, numberofHotels, numberofAttractions){
 	this.populationSize = populationSize;
+	this.numRestaurants = numberofRestaurants;
+	this.numHotels = numberofHotels;
+	this.numAttractions = numberofAttractions;
 	this.init();
 }
-
-Population.prototype.complete = function(){
-	console.log("population complete");
-}
-
 
 Population.prototype.init = function() {
 	console.log("initialize");
 	//making population
 	this.population = [];
 	for(var i = 0; i < this.populationSize; i++) {
-		var trip = new Trip();
+		var trip = new Trip(this.numRestaurants, this.numHotels, this.numAttractions);
 		trip.createRandomTrip();
 		this.population.push(trip);
 	}

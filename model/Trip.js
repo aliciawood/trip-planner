@@ -6,19 +6,15 @@ var Restaurant = require("./Restaurant"),
 	assert = require('assert');
 
 function Trip(numberofRestaurants, numberofHotels, numberofAttractions){
-
+	console.log("in Trip");
+	console.log("rest: ", numberofRestaurants, " hotel: ", numberofHotels, " attr: ",  numberofAttractions);
 	this.numRestaurants = numberofRestaurants;
 	this.numHotels = numberofHotels;
 	this.numAttractions = numberofAttractions;
 	this.numDays = 4;
 
 	this.geneLength = numberofRestaurants + numberofHotels + numberofAttractions;
-	this.trip = Array.apply(null, Array(5)).map(Number.prototype.valueOf, 0);
-
-}
-
-Trip.prototype.complete = function(){
-	this.generateTrip();
+	this.trip = Array.apply(null, Array(this.geneLength)).map(Number.prototype.valueOf, 0);
 }
 
 
@@ -43,26 +39,38 @@ Trip.prototype.generateLocation = function(){
 //generators
 
 Trip.prototype.generateRestaurants = function(){
+	console.log("generating restaurants");
 	var startRestaurantIndex = 0;
 	var endRestaurantIndex = this.numRestaurants;
+	console.log("start index: ", startRestaurantIndex);
+	console.log("end index: ", endRestaurantIndex);
 	for(var i=0; i<(this.numDays*2); i++){
-		var randomRestaurantIndex = Math.random() * (endRestaurantIndex - startRestaurantIndex) + startRestaurantIndex;
+		var randomRestaurantIndex = Math.floor(Math.random() * (endRestaurantIndex - startRestaurantIndex) + startRestaurantIndex);
+		console.log("random index: ", randomRestaurantIndex);
 		this.trip[randomRestaurantIndex] = 1;
 	}
 }
 
 Trip.prototype.generateHotel = function(){
+	console.log("generating hotels");
 	var startHotelIndex = this.numRestaurants;
 	var endHotelIndex = this.numHotels;
-	var randomHotelIndex = Math.random() * (endHotelIndex - startHotelIndex) + startHotelIndex;
+	console.log("start index: ", startHotelIndex);
+	console.log("end index: ", endHotelIndex);
+	var randomHotelIndex = Math.floor(Math.random() * (endHotelIndex - startHotelIndex) + startHotelIndex);
+	console.log("random index: ", randomHotelIndex);
 	this.trip[randomHotelIndex] = 1;
 }
 
 Trip.prototype.generateAttractions = function(){
+	console.log("generating attractions");
 	var startAttractionIndex = this.numHotels + this.numRestaurants;
 	var endAttractionIndex = this.trip.length;
+	console.log("start index: ", startAttractionIndex);
+	console.log("end index: ", endAttractionIndex);
 	for(var i=0; i<(this.numDays*2); i++){
-		var randomAttractionIndex = Math.random() * (endAttractionIndex - startAttractionIndex) + startAttractionIndex;
+		var randomAttractionIndex = Math.floor(Math.random() * (endAttractionIndex - startAttractionIndex) + startAttractionIndex);
+		console.log("random index: ", randomAttractionIndex);
 		this.trip[randomAttractionIndex] = 1;
 	}
 }
