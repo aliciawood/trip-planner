@@ -6,11 +6,17 @@ var Restaurant = require("./Restaurant"),
 	assert = require('assert');
 
 function Trip(numberofRestaurants, numberofHotels, numberofAttractions){
-	console.log("in Trip");
-	console.log("rest: ", numberofRestaurants, " hotel: ", numberofHotels, " attr: ",  numberofAttractions);
+	//console.log("in Trip");
+	//console.log("rest: ", numberofRestaurants, " hotel: ", numberofHotels, " attr: ",  numberofAttractions);
 	this.numRestaurants = numberofRestaurants;
+	this.startRestaurantIndex = 0;
+
 	this.numHotels = numberofHotels;
+	this.startHotelIndex = this.numRestaurants;
+
 	this.numAttractions = numberofAttractions;
+	this.startAttractionIndex = this.startHotelIndex + this.numHotels;
+
 	this.numDays = 4;
 
 	this.geneLength = numberofRestaurants + numberofHotels + numberofAttractions;
@@ -21,19 +27,14 @@ function Trip(numberofRestaurants, numberofHotels, numberofAttractions){
 Trip.prototype.createRandomTrip = function() {
 	
 	//this.generateLocation();
-
 	this.generateRestaurants();
 	this.generateHotel();
 	this.generateAttractions();
-	console.log(this.trip.toString());	
 
 };
 
-Trip.prototype.generateLocation = function(){
-	this.city = "Provo";
-	this.state = "UT";
-	//wikipedia info
-	//other sites
+Trip.prototype.printTrip = function() {
+	console.log(this.trip.toString());		
 }
 
 //generators
@@ -50,72 +51,83 @@ function sleep(milliseconds) {
 Trip.prototype.markRandomBit = function(max, min) {
 	var randomIndex;
 	do {
-		randomIndex = Math.floor(Math.random() * (max - min)) + min;
-		console.log("randomIndex: ", randomIndex);	
+		randomIndex = Math.floor(Math.random() * (max - min)) + min;	
 	} while(this.trip[randomIndex] === 1);
 	this.trip[randomIndex] = 1;
-	console.log("marked");
 }
 
 Trip.prototype.generateRestaurants = function(){
-	console.log("generating restaurants");
-	var startRestaurantIndex = 0;
-	var endRestaurantIndex = this.numRestaurants;
-	console.log("start index: ", startRestaurantIndex);
-	console.log("end index: ", endRestaurantIndex);
+	//console.log("generating restaurants");
 	for(var i=0; i<(this.numDays*2); i++){
-		this.markRandomBit(endRestaurantIndex, startRestaurantIndex);
+		this.markRandomBit(this.startHotelIndex, this.startRestaurantIndex);
 	}
 }
 
 Trip.prototype.generateHotel = function(){
-	console.log("generating hotels");
-	var startHotelIndex = this.numRestaurants;
-	var endHotelIndex = this.numHotels + this.numRestaurants;
-	console.log("start index: ", startHotelIndex);
-	console.log("end index: ", endHotelIndex);
-	this.markRandomBit(endHotelIndex, startHotelIndex);
+	//console.log("generating hotels");
+	this.markRandomBit(this.startAttractionIndex, this.startHotelIndex);
 }
 
 Trip.prototype.generateAttractions = function(){
-	console.log("generating attractions");
-	var startAttractionIndex = this.numHotels + this.numRestaurants;
-	var endAttractionIndex = this.trip.length;
-	console.log("start index: ", startAttractionIndex);
-	console.log("end index: ", endAttractionIndex);
+	//console.log("generating attractions");
 	for(var i=0; i<(this.numDays*2); i++){
-		this.markRandomBit(endAttractionIndex, startAttractionIndex);
+		this.markRandomBit(this.trip.length, this.startAttractionIndex);
 	}
+}
+
+//mutation
+Trip.prototype.mutate = function() {
+
+}
+
+//fitness
+Trip.prototype.getFitness = function() {
+	return 1;
 }
 
 // getters --> need to check if this is what you want! --> return array of indexes, or whole chunk?
 
-Trip.prototype.getRestaurants = function(){
-	var restaurants = this.trip.slice(0,this.numRestaurants);
+Trip.prototype.getRestaurantBits = function(){
+	var restaurants = this.trip.slice(0,this.startHotelIndex);
+	//console.log("get restaurants: ", restaurants.length);
 	return restaurants;
 }
 
-Trip.prototype.getHotels = function(){
-	var endAttractions = this.numRestaurants + this.numHotels + this.numAttractions;
-		
+Trip.prototype.getHotelBits = function(){
+	var hotels = this.trip.slice(this.startHotelIndex,this.startAttractionIndex);
+	//console.log("get hotels: ", hotels.length);
+	return hotels;	
 }
 
-Trip.prototype.getAttractions = function(){
-	var attractions = this.trip.slice(this.numRestaurants, this.numAttractions);
+Trip.prototype.getAttractionBits = function(){
+	var attractions = this.trip.slice(this.startAttractionIndex, this.trip.length);
+	//console.log("get attractions: ", attractions.length);
+	return attractions;
 }
 
 // setters
 
-Trip.prototype.setRestaurants = function(){
-	var restaurants = this.trip.slice(0,this.numRestaurants);
-	return restaurants;
+Trip.prototype.setRestaurantBits = function(restaurants){
+	//console.log("before set restaurants");
+	//this.printTrip();
+	Array.prototype.splice.apply(this.trip, [0, restaurants.length].concat(restaurants));
+	//console.log("after set restaurants");
+	//this.printTrip();
 }
 
-Trip.prototype.setHotels = function(hotels){
-	var endAttractions = this.numRestaurants + this.numHotels + this.numAttractions;
-		
+Trip.prototype.setHotelBits = function(hotels){
+	//console.log("before set hotels");
+	//this.printTrip();
+	Array.prototype.splice.apply(this.trip, [this.startHotelIndex, hotels.length].concat(hotels));
+	//console.log("after set hotel");
+	//this.printTrip();
 }
 
-Trip.prototype.setAttractions = function(){
-	var attractions = this.trip.slice(this.numRestaurants, this.numAttractions);
+Trip.prototype.setAttractionBits = function(attractions){
+	//console.log("before set attractions");
+	//this.printTrip();
+	//console.log(attractions.length);
+	Array.prototype.splice.apply(this.trip, [this.startAttractionIndex, attractions.length].concat(attractions));
+	//console.log("after set attractions");
+	//this.printTrip();
 }
