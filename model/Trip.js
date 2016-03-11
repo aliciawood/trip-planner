@@ -37,6 +37,25 @@ Trip.prototype.generateLocation = function(){
 }
 
 //generators
+function sleep(milliseconds) {
+  var start = new Date().getTime();
+  for (var i = 0; i < 1e7; i++) {
+    if ((new Date().getTime() - start) > milliseconds){
+      break;
+    }
+  }
+}
+
+
+Trip.prototype.markRandomBit = function(max, min) {
+	var randomIndex;
+	do {
+		randomIndex = Math.floor(Math.random() * (max - min)) + min;
+		console.log("randomIndex: ", randomIndex);	
+	} while(this.trip[randomIndex] === 1);
+	this.trip[randomIndex] = 1;
+	console.log("marked");
+}
 
 Trip.prototype.generateRestaurants = function(){
 	console.log("generating restaurants");
@@ -45,21 +64,17 @@ Trip.prototype.generateRestaurants = function(){
 	console.log("start index: ", startRestaurantIndex);
 	console.log("end index: ", endRestaurantIndex);
 	for(var i=0; i<(this.numDays*2); i++){
-		var randomRestaurantIndex = Math.floor(Math.random() * (endRestaurantIndex - startRestaurantIndex) + startRestaurantIndex);
-		console.log("random index: ", randomRestaurantIndex);
-		this.trip[randomRestaurantIndex] = 1;
+		this.markRandomBit(endRestaurantIndex, startRestaurantIndex);
 	}
 }
 
 Trip.prototype.generateHotel = function(){
 	console.log("generating hotels");
 	var startHotelIndex = this.numRestaurants;
-	var endHotelIndex = this.numHotels;
+	var endHotelIndex = this.numHotels + this.numRestaurants;
 	console.log("start index: ", startHotelIndex);
 	console.log("end index: ", endHotelIndex);
-	var randomHotelIndex = Math.floor(Math.random() * (endHotelIndex - startHotelIndex) + startHotelIndex);
-	console.log("random index: ", randomHotelIndex);
-	this.trip[randomHotelIndex] = 1;
+	this.markRandomBit(endHotelIndex, startHotelIndex);
 }
 
 Trip.prototype.generateAttractions = function(){
@@ -69,9 +84,7 @@ Trip.prototype.generateAttractions = function(){
 	console.log("start index: ", startAttractionIndex);
 	console.log("end index: ", endAttractionIndex);
 	for(var i=0; i<(this.numDays*2); i++){
-		var randomAttractionIndex = Math.floor(Math.random() * (endAttractionIndex - startAttractionIndex) + startAttractionIndex);
-		console.log("random index: ", randomAttractionIndex);
-		this.trip[randomAttractionIndex] = 1;
+		this.markRandomBit(endAttractionIndex, startAttractionIndex);
 	}
 }
 
