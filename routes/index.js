@@ -1,6 +1,6 @@
 var express = require('express');
 var router = express.Router();
-var TripGenerator = require('../model/TripGenerator');
+var Trip = require('../model/Trip');
 
 var Evaluation = require('../model/genetic/Evaluation');
 
@@ -15,7 +15,7 @@ router.post('/addinput', function(req, res) {
     var budget = req.body.budget;
     var mood = req.body.mood;
 
-    var trip = new TripGenerator(req.db, budget, mood, res);
+    var trip = new Trip(req.db, budget, mood, res);
     // var score = new Evaluation(trip, budget, mood, req.db);
 });
 

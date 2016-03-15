@@ -3,134 +3,321 @@ module.exports = Trip
 var Restaurant = require("./Restaurant"),
 	Attraction = require("./Attraction"),
 	Hotel = require("./Hotel"),
-	assert = require('assert');
+	Population = require("./Population"),
+	GeneticAlgorithm = require("./GeneticAlgorithm"),
+	assert = require('assert'),
+	NearBySearch = require("../node_modules/googleplaces/lib/NearBySearch.js"),
+	config = require("../config.js");
 
-function Trip(numberofRestaurants, numberofHotels, numberofAttractions){
-	//console.log("in Trip");
-	//console.log("rest: ", numberofRestaurants, " hotel: ", numberofHotels, " attr: ",  numberofAttractions);
-	this.numRestaurants = numberofRestaurants;
-	this.startRestaurantIndex = 0;
-
-	this.numHotels = numberofHotels;
-	this.startHotelIndex = this.numRestaurants;
-
-	this.numAttractions = numberofAttractions;
-	this.startAttractionIndex = this.startHotelIndex + this.numHotels;
-
+function Trip(db, budget, mood, res){
+	console.log("TRIP GENERATOR!");
+	this.db = db;
+	this.budget = budget;
+	this.mood = mood;
+	this.res = res;
+	
+	this.placeName = "";
+	this.state = "";
+	this.city = "";
+	this.restaurants = [];
+	this.hotels = [];
+	this.attractions = [];
+	this.picture = null;
 	this.numDays = 4;
 
-	this.geneLength = numberofRestaurants + numberofHotels + numberofAttractions;
-	this.trip = Array.apply(null, Array(this.geneLength)).map(Number.prototype.valueOf, 0);
+	this.restaurantsQueried = [];
+	this.hotelsQueried = [];
+	this.attractionsQueried = [];
 
-	
+	var curr = this;
+
+
+    var nearBySearch = new NearBySearch(config.apiKey, config.outputFormat);
+  	
+    var parameters = {
+        location: [40.2338438, -111.65853370000002],
+        keyword: "restaurants",
+        radius: '500'
+    };
+    nearBySearch(parameters, function (error, response) {
+        if (error) throw error;
+        assert.notEqual(response.results.length, 0, "Place search must not return 0 results");
+        for(var i in response.results){
+        	console.log("response: ",response.results[i].place_id);
+        	var newRestaurant = new Restaurant(curr.mood, curr.city, curr.state, response.results[i]);
+    		curr.restaurantsQueried.push(newRestaurant);
+        }
+        curr.complete();
+        
+    });
+
+
+   
+    parameters = {
+        location: [40.2338438, -111.65853370000002],
+        keyword: "lodging",
+        radius: '500'
+    };
+
+    nearBySearch(parameters, function (error, response) {
+        if (error) throw error;
+        assert.notEqual(response.results.length, 0, "Place search must not return 0 results");
+        for(var i in response.results){
+        	var newHotel = new Hotel(curr.mood, curr.city, curr.state, response.results[i]);
+        	curr.hotelsQueried.push(newHotel);
+        }
+        curr.complete();
+    });
+
+    parameters = {
+        location: [40.2338438, -111.65853370000002],
+        keyword: "establishment",
+        radius: '500'
+    };
+
+    nearBySearch(parameters, function (error, response) {
+        if (error) throw error;
+        assert.notEqual(response.results.length, 0, "Place search must not return 0 results");
+        for(var i in response.results){
+        	var newAttraction = new Attraction(curr.mood, curr.city, curr.state, response.results[i]);
+        	curr.attractionsQueried.push(newAttraction);
+        }
+        curr.complete();
+    });
+
+
+    // google maps api stuff
+    this.generateLocation();
+    this.getData();
+
+}
+Trip.prototype.complete = function(){
+	if(this.restaurantsQueried.length!=0 && this.attractionsQueried.length!=0 && this.hotelsQueried.length!=0){
+		this.generateTrip();
+	}
 }
 
 
-Trip.prototype.createRandomTrip = function() {
+Trip.prototype.generateTrip = function() {
+	console.log("GENERATE TRIP!");
 	
-	//this.generateLocation();
-	this.generateRestaurants();
-	this.generateHotel();
-	this.generateAttractions();
+	//genetic algorithm part!
+	var population = new Population(10, this.restaurantsQueried.length, this.hotelsQueried.length, this.attractionsQueried.length);
+	population.init();
+	console.log("before evolve: ", population.size());
+	this.evolvePopulation(population);
+	console.log("after evolve: ", population.size());
+	var bestTrip = population.getBestTrip();
+	this.printTrip(bestTrip);
+
+
+	//figure out how to split up budget between attractions and lodging.....
+	var moneyForAttractions = this.budget/2.0;
+	var moneyForHotels = this.budget/2.0;
+
+	this.generateLocation();
+
+
+	this.res.render('tripoutput', {
+        "restaurantlist" : this.restaurants,
+        "hotellist": this.hotels,
+        "attractionlist": this.attractions,
+        "city":this.city,
+        "state":this.state,
+        "money":this.budget,
+        "mood":this.mood
+    });
+	
 
 };
 
-Trip.prototype.printTrip = function() {
-	console.log(this.trip.toString());		
+Trip.prototype.evolvePopulation = function(population) {
+	//var newPopulation = new Population(population.size(), this.restaurantsQueried.length, this.hotelsQueried.length, this.attractionsQueried.length);
+	var size = population.size();
+	for(var i = 0; i < size; i++) {
+		var trip1 = this.tournamentSelection(population);
+		var trip2 = this.tournamentSelection(population);
+		var newTrip = this.crossover(trip1, trip2);
+		//newTrip.mutate();
+		population.addTrip(newTrip);
+	}
 }
 
-//generators
-function sleep(milliseconds) {
-  var start = new Date().getTime();
-  for (var i = 0; i < 1e7; i++) {
-    if ((new Date().getTime() - start) > milliseconds){
-      break;
+Trip.prototype.tournamentSelection = function(population) {
+	var tournament = new Population(6, this.restaurantsQueried.length, this.hotelsQueried.length, this.attractionsQueried.length);
+	for(var i = 0; i < 6; i++) {
+		var randomTripIndex = Math.floor(Math.random() * population.size());
+		var randomTrip = population.getTrip(randomTripIndex);
+		tournament.addTrip(randomTrip);
+	}
+
+	var bestTrip = tournament.getBestTrip();
+	return bestTrip;
+}
+
+Trip.prototype.crossover = function(trip1, trip2) {
+	var newTrip = new GeneticAlgorithm(this.restaurantsQueried.length, this.hotelsQueried.length, this.attractionsQueried.length);
+
+	//restaurants
+	if (Math.random() % 2 === 1) {
+		var restaurants1 = trip1.getRestaurantBits();
+		newTrip.setRestaurantBits(restaurants1);
+	}
+	else {
+		var restaurants2 = trip2.getRestaurantBits();
+		newTrip.setRestaurantBits(restaurants2);
+	}
+
+	//hotels
+	if (Math.random() % 2 === 1) {
+		var hotels1 = trip1.getHotelBits();
+		newTrip.setHotelBits(hotels1);
+	}
+	else {
+		var hotels2 = trip2.getHotelBits();
+		newTrip.setHotelBits(hotels2);
+	}
+
+	//attractions
+	if (Math.random() % 2 === 1) {
+		var attractions1 = trip1.getAttractionBits();
+		newTrip.setAttractionBits(attractions1);
+	}
+	else {
+		var attractions2 = trip2.getAttractionBits();
+		newTrip.setAttractionBits(attractions2);
+	}
+
+	return newTrip;
+}
+
+Trip.prototype.generateLocation = function(){
+	this.city = "Provo";
+	this.state = "Alabama";
+	//wikipedia info
+	//other sites
+}
+
+Trip.prototype.printTrip = function(trip) {
+	this.getRestaurants(trip);
+	this.getAttractions(trip);
+	this.getHotels(trip);
+}
+
+Trip.prototype.getRestaurants = function(trip){
+	var restaurantBits = trip.getRestaurantBits();
+	for(var i=0; i<this.restaurantsQueried.length; i++){
+		if(restaurantBits[i] == 0)
+			continue;
+		// var newRestaurant = new Restaurant(this.mood, this.city, this.state, this.restaurantsQueried[i]);
+		var newRestaurant = this.restaurantsQueried[i];
+		this.restaurants.push(newRestaurant);
+	}
+}
+
+Trip.prototype.getAttractions = function(trip){
+	var attractionBits = trip.getAttractionBits();
+	for(var i=0; i<this.attractionsQueried.length; i++){
+		if(attractionBits[i] == 0)
+			continue;
+		// var newAttraction = new Attraction(this.mood, this.city, this.state, this.attractionsQueried[i]);
+		var newAttraction = this.attractionsQueried[i];
+		this.attractions.push(newAttraction);
+	}
+}
+
+Trip.prototype.getHotels = function(trip){
+	var hotelBits = trip.getHotelBits();
+	for(var i=0; i<this.hotelsQueried.length; i++){
+		if(hotelBits[i] == 0)
+			continue;
+		// var newHotel = new Hotel(this.mood, this.city, this.state, this.hotelsQueried[i]);
+		var newHotel = this.hotelsQueried[i];
+		this.hotels.push(newHotel);
+	}
+	
+}
+
+Trip.prototype.getData = function() {
+	var displayMap;
+	var service;
+	/*var test = "test";
+
+	displayMap = new google.maps.Map(document.getElementById('map'), {
+		center: {lat: 40.2338438, lng: -111.65853370000002},
+		zoom: 15 });
+
+
+	var geocoder = new google.maps.Geocoder();
+	var address = document.getElementById('address').value;
+
+	gmAPI.geocode({'address': address}, function(results, status) {
+		if (status === google.maps.GeocoderStatus.OK) {
+			var infowindow = new google.maps.InfoWindow();
+			google.maps.event.addListener(marker, 'click', function() {
+				infowindow.setContent(address);
+				infowindow.open(displayMap, this);
+			});
+
+			updatePoints(displayMap)
+		} else {
+			alert('Geocode was not successful for the following reason: ' + status);
+		}
+	});
+
+    function callback(results, status) {
+      if (status == google.maps.places.PlacesServiceStatus.OK) {
+        restaurants = results;
+        var list = document.getElementById('restaurantList');
+        list.innerHTML = '';
+        for (var i = 0; i < results.length; i++) {
+          var place = results[i];
+          updateRestaurants(place);
+          createMarker(place, displayMap);
+        }
+      }
     }
-  }
+
+    function updateRestaurants(place) {
+      var list = document.getElementById('restaurantList');
+      var newEntry = document.createElement('li');
+      newEntry.appendChild(document.createTextNode(place.name));
+      list.appendChild(newEntry);
+    }
+
+    function updatePoints(map) {
+      var request = {
+            location: map.getCenter(),
+            radius: '500',
+            types: ["food"]
+      };
+      service = new google.maps.places.PlacesService(displayMap);
+      service.nearbySearch(request, callback);
+    }
+
+    function createMarker(place, map) {
+      var placeLoc = place.geometry.location;
+      var marker = new google.maps.Marker({
+        map: map,
+        position: place.geometry.location
+      });
+
+      var infowindow = new google.maps.InfoWindow();
+      google.maps.event.addListener(marker, 'click', function() {
+        infowindow.setContent(place.name);
+        infowindow.open(map, this);
+      });
+    }*/
 }
 
-
-Trip.prototype.markRandomBit = function(max, min) {
-	var randomIndex;
-	do {
-
-		randomIndex = Math.floor(Math.random() * (max - min)) + min;	
-		// console.log("randomindex: ",randomIndex);
-	} while(this.trip[randomIndex] === 1);
-	this.trip[randomIndex] = 1;
-}
-
-Trip.prototype.generateRestaurants = function(){
-	for(var i=0; i<(this.numDays*2); i++){
-		this.markRandomBit(this.startHotelIndex, this.startRestaurantIndex);
-	}
-}
-
-Trip.prototype.generateHotel = function(){
-	//console.log("generating hotels");
-	this.markRandomBit(this.startAttractionIndex, this.startHotelIndex);
-}
-
-Trip.prototype.generateAttractions = function(){
-	//console.log("generating attractions");
-	for(var i=0; i<(this.numDays*2); i++){
-		this.markRandomBit(this.trip.length, this.startAttractionIndex);
-	}
-}
-
-//mutation
-Trip.prototype.mutate = function() {
+Trip.prototype.generateRestaurantList = function() {
 
 }
 
-//fitness
-Trip.prototype.getFitness = function() {
-	return 1;
+Trip.prototype.generateHotelList = function() {
+
 }
 
-// getters --> need to check if this is what you want! --> return array of indexes, or whole chunk?
+Trip.prototype.generateAttractionList = function() {
 
-Trip.prototype.getRestaurantBits = function(){
-	var restaurants = this.trip.slice(0,this.startHotelIndex);
-	//console.log("get restaurants: ", restaurants.length);
-	return restaurants;
-}
-
-Trip.prototype.getHotelBits = function(){
-	var hotels = this.trip.slice(this.startHotelIndex,this.startAttractionIndex);
-	//console.log("get hotels: ", hotels.length);
-	return hotels;	
-}
-
-Trip.prototype.getAttractionBits = function(){
-	var attractions = this.trip.slice(this.startAttractionIndex, this.trip.length);
-	//console.log("get attractions: ", attractions.length);
-	return attractions;
-}
-
-// setters
-
-Trip.prototype.setRestaurantBits = function(restaurants){
-	//console.log("before set restaurants");
-	//this.printTrip();
-	Array.prototype.splice.apply(this.trip, [0, restaurants.length].concat(restaurants));
-	//console.log("after set restaurants");
-	//this.printTrip();
-}
-
-Trip.prototype.setHotelBits = function(hotels){
-	//console.log("before set hotels");
-	//this.printTrip();
-	Array.prototype.splice.apply(this.trip, [this.startHotelIndex, hotels.length].concat(hotels));
-	//console.log("after set hotel");
-	//this.printTrip();
-}
-
-Trip.prototype.setAttractionBits = function(attractions){
-	//console.log("before set attractions");
-	//this.printTrip();
-	//console.log(attractions.length);
-	Array.prototype.splice.apply(this.trip, [this.startAttractionIndex, attractions.length].concat(attractions));
-	//console.log("after set attractions");
-	//this.printTrip();
 }

@@ -1,6 +1,6 @@
 module.exports = Population
 
-var Trip = require("./Trip"),
+var GeneticAlgorithm = require("./GeneticAlgorithm"),
 	Restaurant = require("./Restaurant"),
 	Attraction = require("./Attraction"),
 	Hotel = require("./Hotel"),
@@ -18,7 +18,7 @@ function Population(populationSize, numberofRestaurants, numberofHotels, numbero
 Population.prototype.init = function() {
 	//making population
 	for(var i = 0; i < this.populationSize; i++) {
-		var trip = new Trip(this.numRestaurants, this.numHotels, this.numAttractions);
+		var trip = new GeneticAlgorithm(this.numRestaurants, this.numHotels, this.numAttractions);
 		trip.createRandomTrip();
 		this.population.push(trip);
 	}
