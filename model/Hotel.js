@@ -1,20 +1,16 @@
 module.exports = Hotel
 
 
-function Hotel(mood, moneyToUse, city, state, hotels){
-	this.mood = mood;
-	this.moneyToUse = moneyToUse; 
+function Hotel(mood, city, state, hotel){
+	this.mood = mood; 
 	this.city = city;
 	this.state = state;
-	this.hotels = hotels
 
 	this.popularity = null;
 
-	var rand = Math.floor(Math.random() * this.hotels.length);
-	var randomHotel = this.hotels[rand];
-	this.name = randomHotel.name;
-	this.price = randomHotel.price;
-	this.ratings = randomHotel.rating;
+	this.name = hotel.name;
+	this.price = hotel.price;
+	this.ratings = hotel.rating;
 }
 
 

@@ -1,20 +1,16 @@
 module.exports = Attraction
 
-function Attraction(mood, moneyToUse, city, state, attractions){
+function Attraction(mood, city, state, attraction){
 	this.mood = mood;
 	this.city = city;
 	this.state = state;
-	this.moneyToUse = moneyToUse;
-	this.attractions = attractions
 
 	this.category = "";
 	this.popularity = null;
 
-	var rand = Math.floor(Math.random() * this.attractions.length);
-	var randomAttraction = this.attractions[rand];
-	this.name = randomAttraction.name;
-	this.price = randomAttraction.price;
-	this.ratings = randomAttraction.rating;
+	this.name = attraction.name;
+	this.price = attraction.price;
+	this.ratings = attraction.rating;
 
 }
 

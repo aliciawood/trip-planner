@@ -166,21 +166,27 @@ TripGenerator.prototype.getRestaurants = function(trip){
 	for(var i=0; i<this.restaurantsQueried.length; i++){
 		if(restaurantBits[i] == 0)
 			continue;
-		var newRestaurant = new Restaurant(this.mood, this.city, this.state, this.restaurantsQueried);
+		var newRestaurant = new Restaurant(this.mood, this.city, this.state, this.restaurantsQueried[i]);
 		this.restaurants.push(newRestaurant);
 	}
 }
 
 TripGenerator.prototype.getAttractions = function(trip){
+	var attractionBits = trip.getAttractionBits();
 	for(var i=0; i<this.attractionsQueried.length; i++){
-		var newAttraction = new Attraction(this.mood, moneyPerAttraction, this.city, this.state, this.attractionsQueried);
+		if(attractionBits[i] == 0)
+			continue;
+		var newAttraction = new Attraction(this.mood, this.city, this.state, this.attractionsQueried[i]);
 		this.attractions.push(newAttraction);
 	}
 }
 
 TripGenerator.prototype.getHotels = function(trip){
+	var hotelBits = trip.getHotelBits();
 	for(var i=0; i<this.hotelsQueried.length; i++){
-		var newHotel = new Hotel(this.mood, moneyPerHotel, this.city, this.state, this.hotelsQueried);
+		if(hotelBits[i] == 0)
+			continue;
+		var newHotel = new Hotel(this.mood, this.city, this.state, this.hotelsQueried[i]);
 		this.hotels.push(newHotel);
 	}
 	
