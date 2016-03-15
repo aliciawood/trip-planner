@@ -6,6 +6,14 @@ var Restaurant = require("./Restaurant"),
 	Population = require("./Population"),
 	Trip = require("./Trip"),
 	assert = require('assert');
+/*
+var publicConfig = {
+	key: '',
+	encode_polylines: false,
+	secure: true
+};
+
+var gmAPI = new GoogleMapsAPI(publicConfig);*/
 
 function TripGenerator(db, budget, mood, res){
 	this.db = db;
@@ -47,6 +55,10 @@ function TripGenerator(db, budget, mood, res){
     	curr.attractionsQueried = docs;
     	curr.complete();
     });
+
+    // google maps api stuff
+    this.generateLocation();
+    this.getData();
 
 }
 TripGenerator.prototype.complete = function(){
@@ -190,4 +202,88 @@ TripGenerator.prototype.getHotels = function(trip){
 		this.hotels.push(newHotel);
 	}
 	
+}
+
+TripGenerator.prototype.getData = function() {
+	var displayMap;
+	var service;
+	/*var test = "test";
+
+	displayMap = new google.maps.Map(document.getElementById('map'), {
+		center: {lat: 40.2338438, lng: -111.65853370000002},
+		zoom: 15 });
+
+
+	var geocoder = new google.maps.Geocoder();
+	var address = document.getElementById('address').value;
+
+	gmAPI.geocode({'address': address}, function(results, status) {
+		if (status === google.maps.GeocoderStatus.OK) {
+			var infowindow = new google.maps.InfoWindow();
+			google.maps.event.addListener(marker, 'click', function() {
+				infowindow.setContent(address);
+				infowindow.open(displayMap, this);
+			});
+
+			updatePoints(displayMap)
+		} else {
+			alert('Geocode was not successful for the following reason: ' + status);
+		}
+	});
+
+    function callback(results, status) {
+      if (status == google.maps.places.PlacesServiceStatus.OK) {
+        restaurants = results;
+        var list = document.getElementById('restaurantList');
+        list.innerHTML = '';
+        for (var i = 0; i < results.length; i++) {
+          var place = results[i];
+          updateRestaurants(place);
+          createMarker(place, displayMap);
+        }
+      }
+    }
+
+    function updateRestaurants(place) {
+      var list = document.getElementById('restaurantList');
+      var newEntry = document.createElement('li');
+      newEntry.appendChild(document.createTextNode(place.name));
+      list.appendChild(newEntry);
+    }
+
+    function updatePoints(map) {
+      var request = {
+            location: map.getCenter(),
+            radius: '500',
+            types: ["food"]
+      };
+      service = new google.maps.places.PlacesService(displayMap);
+      service.nearbySearch(request, callback);
+    }
+
+    function createMarker(place, map) {
+      var placeLoc = place.geometry.location;
+      var marker = new google.maps.Marker({
+        map: map,
+        position: place.geometry.location
+      });
+
+      var infowindow = new google.maps.InfoWindow();
+      google.maps.event.addListener(marker, 'click', function() {
+        infowindow.setContent(place.name);
+        infowindow.open(map, this);
+      });
+    }*/
+}
+
+TripGenerator.prototype.generateRestaurantList = function() {
+
+}
+
+TripGenerator.prototype.generateHotelList = function() {
+
+}
+
+TripGenerator.prototype.generateAttractionList = function() {
+
 }
