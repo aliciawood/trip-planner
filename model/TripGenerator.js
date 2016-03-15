@@ -65,7 +65,7 @@ TripGenerator.prototype.generateTrip = function() {
 	this.evolvePopulation(population);
 	console.log("after evolve: ", population.size());
 	var bestTrip = population.getBestTrip();
-	bestTrip.printTrip();
+	this.printTrip(bestTrip);
 
 
 	//figure out how to split up budget between attractions and lodging.....
@@ -74,9 +74,6 @@ TripGenerator.prototype.generateTrip = function() {
 
 	this.generateLocation();
 
-	this.generateRestaurants();
-	this.generateAttractions(moneyForAttractions);
-	this.generateHotels(moneyForHotels);
 
 	this.res.render('tripoutput', {
         "restaurantlist" : this.restaurants,
@@ -158,25 +155,31 @@ TripGenerator.prototype.generateLocation = function(){
 	//other sites
 }
 
+TripGenerator.prototype.printTrip = function(trip) {
+	this.getRestaurants(trip);
+	this.getAttractions(trip);
+	this.getHotels(trip);
+}
 
-TripGenerator.prototype.generateRestaurants = function(){
-	for(var i=0; i<(this.numDays*2); i++){
+TripGenerator.prototype.getRestaurants = function(trip){
+	var restaurantBits = trip.getRestaurantBits();
+	for(var i=0; i<this.restaurantsQueried.length; i++){
+		if(restaurantBits[i] == 0)
+			continue;
 		var newRestaurant = new Restaurant(this.mood, this.city, this.state, this.restaurantsQueried);
 		this.restaurants.push(newRestaurant);
 	}
 }
 
-TripGenerator.prototype.generateAttractions = function(money){
-	var moneyPerAttraction = money/(this.numDays*2);
-	for(var i=0; i<(this.numDays*2); i++){
+TripGenerator.prototype.getAttractions = function(trip){
+	for(var i=0; i<this.attractionsQueried.length; i++){
 		var newAttraction = new Attraction(this.mood, moneyPerAttraction, this.city, this.state, this.attractionsQueried);
 		this.attractions.push(newAttraction);
 	}
 }
 
-TripGenerator.prototype.generateHotels = function(money){
-	var moneyPerHotel = money/(this.numDays);
-	for(var i=0; i<this.numDays; i++){
+TripGenerator.prototype.getHotels = function(trip){
+	for(var i=0; i<this.hotelsQueried.length; i++){
 		var newHotel = new Hotel(this.mood, moneyPerHotel, this.city, this.state, this.hotelsQueried);
 		this.hotels.push(newHotel);
 	}
