@@ -10,6 +10,7 @@ function Attraction(mood, city, state, attraction){
 
 	this.name = attraction.name;
 	this.price = attraction.price;
+	this.placeID = attraction.place_id;
 	this.ratings = attraction.rating;
 
 }

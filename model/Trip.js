@@ -53,13 +53,14 @@ function sleep(milliseconds) {
 Trip.prototype.markRandomBit = function(max, min) {
 	var randomIndex;
 	do {
+
 		randomIndex = Math.floor(Math.random() * (max - min)) + min;	
+		// console.log("randomindex: ",randomIndex);
 	} while(this.trip[randomIndex] === 1);
 	this.trip[randomIndex] = 1;
 }
 
 Trip.prototype.generateRestaurants = function(){
-	//console.log("generating restaurants");
 	for(var i=0; i<(this.numDays*2); i++){
 		this.markRandomBit(this.startHotelIndex, this.startRestaurantIndex);
 	}

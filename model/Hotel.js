@@ -12,6 +12,7 @@ function Hotel(mood, city, state, hotel){
 
 	this.name = hotel.name;
 	this.price = hotel.price;
+	this.placeID = hotel.place_id;
 	this.ratings = hotel.rating;
 }
 

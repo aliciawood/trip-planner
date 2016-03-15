@@ -16,7 +16,6 @@ function Population(populationSize, numberofRestaurants, numberofHotels, numbero
 }
 
 Population.prototype.init = function() {
-	console.log("initialize");
 	//making population
 	for(var i = 0; i < this.populationSize; i++) {
 		var trip = new Trip(this.numRestaurants, this.numHotels, this.numAttractions);

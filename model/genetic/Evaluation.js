@@ -91,7 +91,6 @@ Evaluation.prototype.parseXML = function(xml){
 	var curr = this;
 	var collection1 = this.db.get("culturalinfo");
     collection1.find({"state":this.trip.state},{},function(e,docs){
-    	// console.log("DOCS: ",docs[0]["info"]);
     	var culturalinfo = docs[0]["info"];
     	curr.calculateScore(culturalinfo);
     });

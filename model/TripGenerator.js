@@ -8,16 +8,9 @@ var Restaurant = require("./Restaurant"),
 	assert = require('assert'),
 	NearBySearch = require("../node_modules/googleplaces/lib/NearBySearch.js"),
 	config = require("../config.js");
-/*
-var publicConfig = {
-	key: '',
-	encode_polylines: false,
-	secure: true
-};
-
-var gmAPI = new GoogleMapsAPI(publicConfig);*/
 
 function TripGenerator(db, budget, mood, res){
+	console.log("TRIP GENERATOR!");
 	this.db = db;
 	this.budget = budget;
 	this.mood = mood;
@@ -32,49 +25,64 @@ function TripGenerator(db, budget, mood, res){
 	this.picture = null;
 	this.numDays = 4;
 
-	
-	this.restaurantsQueried = null;
-	this.hotelsQueried = null;
-	this.attractionsQueried = null;
-
+	this.restaurantsQueried = [];
+	this.hotelsQueried = [];
+	this.attractionsQueried = [];
 
 	var curr = this;
-	var collection1 = db.get("restaurants");
-    collection1.find({},{},function(e,docs){
-    	curr.restaurantsQueried = docs;
-    	curr.complete();
-    });
 
 
     var nearBySearch = new NearBySearch(config.apiKey, config.outputFormat);
-
     var parameters = {
         location: [40.2338438, -111.65853370000002],
-        keyword: "food",
-        radius: '500',
+        keyword: "restaurants",
+        radius: '500'
     };
-
     nearBySearch(parameters, function (error, response) {
-    	console.log("response: ",response.results.length);
         if (error) throw error;
         assert.notEqual(response.results.length, 0, "Place search must not return 0 results");
-
+        for(var i in response.results){
+        	var newRestaurant = new Restaurant(curr.mood, curr.city, curr.state, response.results[i]);
+        	curr.restaurantsQueried.push(newRestaurant);
+        }
+        curr.complete();
         
     });
 
 
+   
+    parameters = {
+        location: [40.2338438, -111.65853370000002],
+        keyword: "lodging",
+        radius: '500'
+    };
 
-    var collection2 = db.get("hotels");
-    collection2.find({},{},function(e,docs){
-    	curr.hotelsQueried = docs;
-    	curr.complete();
+    nearBySearch(parameters, function (error, response) {
+        if (error) throw error;
+        assert.notEqual(response.results.length, 0, "Place search must not return 0 results");
+        for(var i in response.results){
+        	var newHotel = new Hotel(curr.mood, curr.city, curr.state, response.results[i]);
+        	curr.hotelsQueried.push(newHotel);
+        }
+        curr.complete();
     });
 
-    var collection3 = db.get("attractions");
-    collection3.find({},{},function(e,docs){
-    	curr.attractionsQueried = docs;
-    	curr.complete();
+    parameters = {
+        location: [40.2338438, -111.65853370000002],
+        keyword: "establishment",
+        radius: '500'
+    };
+
+    nearBySearch(parameters, function (error, response) {
+        if (error) throw error;
+        assert.notEqual(response.results.length, 0, "Place search must not return 0 results");
+        for(var i in response.results){
+        	var newAttraction = new Attraction(curr.mood, curr.city, curr.state, response.results[i]);
+        	curr.attractionsQueried.push(newAttraction);
+        }
+        curr.complete();
     });
+
 
     // google maps api stuff
     this.generateLocation();
@@ -82,7 +90,7 @@ function TripGenerator(db, budget, mood, res){
 
 }
 TripGenerator.prototype.complete = function(){
-	if(this.restaurantsQueried!=null && this.attractionsQueried!=null && this.hotelsQueried!=null){
+	if(this.restaurantsQueried.length!=0 && this.attractionsQueried.length!=0 && this.hotelsQueried.length!=0){
 		this.generateTrip();
 	}
 }
