@@ -16,7 +16,6 @@ router.post('/addinput', function(req, res) {
     var mood = req.body.mood;
 
     var trip = new TripGenerator(req.db, budget, mood, res);
-    
     var score = new Evaluation(trip, budget, mood, req.db);
 });
 

@@ -5,7 +5,9 @@ var Restaurant = require("./Restaurant"),
 	Hotel = require("./Hotel"),
 	Population = require("./Population"),
 	Trip = require("./Trip"),
-	assert = require('assert');
+	assert = require('assert'),
+	NearBySearch = require("../node_modules/googleplaces/lib/NearBySearch.js"),
+	config = require("../config.js");
 /*
 var publicConfig = {
 	key: '',
@@ -22,8 +24,8 @@ function TripGenerator(db, budget, mood, res){
 	this.res = res;
 	
 	this.placeName = "";
-	this.city = "";
 	this.state = "";
+	this.city = "";
 	this.restaurants = [];
 	this.hotels = [];
 	this.attractions = [];
@@ -42,6 +44,24 @@ function TripGenerator(db, budget, mood, res){
     	curr.restaurantsQueried = docs;
     	curr.complete();
     });
+
+
+    var nearBySearch = new NearBySearch(config.apiKey, config.outputFormat);
+
+    var parameters = {
+        location: [40.2338438, -111.65853370000002],
+        keyword: "food",
+        radius: '500',
+    };
+
+    nearBySearch(parameters, function (error, response) {
+    	console.log("response: ",response.results.length);
+        if (error) throw error;
+        assert.notEqual(response.results.length, 0, "Place search must not return 0 results");
+
+        
+    });
+
 
 
     var collection2 = db.get("hotels");
@@ -162,7 +182,7 @@ TripGenerator.prototype.crossover = function(trip1, trip2) {
 
 TripGenerator.prototype.generateLocation = function(){
 	this.city = "Provo";
-	this.state = "UT";
+	this.state = "Alabama";
 	//wikipedia info
 	//other sites
 }

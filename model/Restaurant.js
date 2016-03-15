@@ -2,8 +2,8 @@ module.exports = Restaurant
 
 var PlaceDetails = require("./PlaceDetails");
 
-function Restaurant(mood, city, state, restaurants){
-	this.restaurants = restaurants
+function Restaurant(mood, city, state, restaurant){
+	// this.restaurants = restaurants
 	this.mood = mood;
 	this.city = city;
 	this.state = state;

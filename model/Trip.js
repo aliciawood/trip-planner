@@ -21,6 +21,8 @@ function Trip(numberofRestaurants, numberofHotels, numberofAttractions){
 
 	this.geneLength = numberofRestaurants + numberofHotels + numberofAttractions;
 	this.trip = Array.apply(null, Array(this.geneLength)).map(Number.prototype.valueOf, 0);
+
+	
 }
 
 
