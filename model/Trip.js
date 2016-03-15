@@ -103,6 +103,7 @@ Trip.prototype.getAttractionBits = function(){
 	var attractions = this.trip.slice(this.startAttractionIndex, this.trip.length);
 	//console.log("get attractions: ", attractions.length);
 	return attractions;
+
 }
 
 // setters

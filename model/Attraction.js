@@ -14,7 +14,12 @@ function Attraction(mood, city, state, attraction){
 
 }
 
+Attraction.prototype.getMoodScore = function(mood) {
+	console.log("get the score for the mood of the attraction");
+	return 0;
+};
 
-Attraction.prototype.someMethodHere = function() {
-	// body...
+Attraction.prototype.getPriceScore = function(price) {
+	console.log("get the score for the price of the attraction");
+	return 0;
 };
