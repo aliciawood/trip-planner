@@ -36,7 +36,7 @@ function TripGenerator(db, budget, mood, res){
     var parameters = {
         location: [40.2338438, -111.65853370000002],
         keyword: "restaurants",
-        radius: '500'
+        radius: '50000'
     };
     nearBySearch(parameters, function (error, response) {
         if (error) throw error;
@@ -54,7 +54,7 @@ function TripGenerator(db, budget, mood, res){
     parameters = {
         location: [40.2338438, -111.65853370000002],
         keyword: "lodging",
-        radius: '500'
+        radius: '50000'
     };
 
     nearBySearch(parameters, function (error, response) {
@@ -70,7 +70,7 @@ function TripGenerator(db, budget, mood, res){
     parameters = {
         location: [40.2338438, -111.65853370000002],
         keyword: "establishment",
-        radius: '500'
+        radius: '50000'
     };
 
     nearBySearch(parameters, function (error, response) {

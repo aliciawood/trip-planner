@@ -84,11 +84,11 @@ block content
     function updatePoints(map) {
       var request = {
             location: map.getCenter(),
-            radius: '500',
+            radius: '50000',
             types: ["food"]
       };
       service = new google.maps.places.PlacesService(displayMap);
-      service.nearbySearch(request, callback);
+      service.radarSearch(request, callback);
     }
 
     function createMarker(place, map) {
