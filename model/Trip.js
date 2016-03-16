@@ -4,7 +4,7 @@ var Restaurant = require("./Restaurant"),
 	Attraction = require("./Attraction"),
 	Hotel = require("./Hotel"),
 	Population = require("./Population"),
-	GeneticAlgorithm = require("./GeneticAlgorithm"),
+	GeneticAlgorithm = require("./genetic/GeneticAlgorithm"),
 	assert = require('assert'),
 	NearBySearch = require("../node_modules/googleplaces/lib/NearBySearch.js"),
 	config = require("../config.js");
@@ -43,7 +43,7 @@ function Trip(db, budget, mood, res){
         if (error) throw error;
         assert.notEqual(response.results.length, 0, "Place search must not return 0 results");
         for(var i in response.results){
-        	console.log("response: ",response.results[i].place_id);
+        	// console.log("response: ",response.results[i].place_id);
         	var newRestaurant = new Restaurant(curr.mood, curr.city, curr.state, response.results[i]);
     		curr.restaurantsQueried.push(newRestaurant);
         }

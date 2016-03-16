@@ -1,6 +1,6 @@
 module.exports = Population
 
-var GeneticAlgorithm = require("./GeneticAlgorithm"),
+var GeneticAlgorithm = require("./genetic/GeneticAlgorithm"),
 	Restaurant = require("./Restaurant"),
 	Attraction = require("./Attraction"),
 	Hotel = require("./Hotel"),

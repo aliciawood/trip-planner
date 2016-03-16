@@ -1,8 +1,8 @@
 module.exports = GeneticAlgorithm
 
-var Restaurant = require("./Restaurant"),
-	Attraction = require("./Attraction"),
-	Hotel = require("./Hotel"),
+var Restaurant = require("../Restaurant"),
+	Attraction = require("../Attraction"),
+	Hotel = require("../Hotel"),
 	assert = require('assert');
 
 function GeneticAlgorithm(numberofRestaurants, numberofHotels, numberofAttractions){

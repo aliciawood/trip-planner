@@ -1,7 +1,6 @@
 module.exports = Evaluation
 
 var http = require('http');
-// var $ = require("jquery");
 var et = require('elementtree');
 
 function Evaluation(currTrip, budget, mood, db){
