@@ -6,7 +6,7 @@ var Restaurant = require("./Restaurant"),
 	Population = require("./Population"),
 	GeneticAlgorithm = require("./genetic/GeneticAlgorithm"),
 	assert = require('assert'),
-	NearBySearch = require("../node_modules/googleplaces/lib/NearBySearch.js"),
+	RadarSearch = require("../node_modules/googleplaces/lib/RadarSearch.js"),
 	config = require("../config.js");
 
 function Trip(db, budget, mood, res){
@@ -32,16 +32,17 @@ function Trip(db, budget, mood, res){
 	var curr = this;
 
 
-    var nearBySearch = new NearBySearch(config.apiKey, config.outputFormat);
+    var radarSearch = new RadarSearch(config.apiKey, config.outputFormat);
   	
     var parameters = {
         location: [40.2338438, -111.65853370000002],
         keyword: "restaurants",
-        radius: '500'
+        radius: '50000'
     };
-    nearBySearch(parameters, function (error, response) {
+    radarSearch(parameters, function (error, response) {
         if (error) throw error;
         assert.notEqual(response.results.length, 0, "Place search must not return 0 results");
+        console.log("number of restaurants: ", response.results.length);
         for(var i in response.results){
         	// console.log("response: ",response.results[i].place_id);
         	var newRestaurant = new Restaurant(curr.mood, curr.city, curr.state, response.results[i]);
@@ -59,7 +60,7 @@ function Trip(db, budget, mood, res){
         radius: '500'
     };
 
-    nearBySearch(parameters, function (error, response) {
+    radarSearch(parameters, function (error, response) {
         if (error) throw error;
         assert.notEqual(response.results.length, 0, "Place search must not return 0 results");
         for(var i in response.results){
@@ -75,7 +76,7 @@ function Trip(db, budget, mood, res){
         radius: '500'
     };
 
-    nearBySearch(parameters, function (error, response) {
+    radarSearch(parameters, function (error, response) {
         if (error) throw error;
         assert.notEqual(response.results.length, 0, "Place search must not return 0 results");
         for(var i in response.results){
