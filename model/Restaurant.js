@@ -11,10 +11,8 @@ function Restaurant(mood, city, state, restaurant){
 	this.city = city;
 	this.state = state;
 
-	this.name = restaurant.name;
 	this.placeID = restaurant.place_id;
 	// this.genre = restaurant.genre;
-	this.rating = restaurant.rating;
 
 
 	var placeDetailsRequest = new PlaceDetailsRequest(config.apiKey, config.outputFormat);
@@ -31,8 +29,11 @@ function Restaurant(mood, city, state, restaurant){
     	  	reviewText += currReview.text;
     	}
     	curr.reviewText = reviewText;
-		        
+    	curr.name = response.result.name;
+        curr.rating = response.result.rating;		        
     });
+
+    	console.log("name: ", this.name);
 
 }
 

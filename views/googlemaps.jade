@@ -68,6 +68,7 @@ block content
         list.innerHTML = '';
         for (var i = 0; i < results.length; i++) {
           var place = results[i];
+          console.log(place);
           updateRestaurants(place);
           createMarker(place, displayMap);
         }
@@ -88,7 +89,7 @@ block content
             types: ["food"]
       };
       service = new google.maps.places.PlacesService(displayMap);
-      service.radarSearch(request, callback);
+      service.nearbySearch(request, callback);
     }
 
     function createMarker(place, map) {

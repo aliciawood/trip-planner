@@ -36,7 +36,7 @@ function Trip(db, budget, mood, res){
   	
     var parameters = {
         location: [40.2338438, -111.65853370000002],
-        keyword: "restaurants",
+        keyword: "restaurant",
         radius: '50000'
     };
     radarSearch(parameters, function (error, response) {
@@ -54,7 +54,7 @@ function Trip(db, budget, mood, res){
 
 
    
-    parameters = {
+    /*parameters = {
         location: [40.2338438, -111.65853370000002],
         keyword: "lodging",
         radius: '500'
@@ -84,7 +84,7 @@ function Trip(db, budget, mood, res){
         	curr.attractionsQueried.push(newAttraction);
         }
         curr.complete();
-    });
+    });*/
 
 
     // google maps api stuff
