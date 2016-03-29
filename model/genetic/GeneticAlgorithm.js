@@ -78,9 +78,38 @@ GeneticAlgorithm.prototype.generateAttractions = function(){
 	}
 }
 
+GeneticAlgorithm.prototype.flipBit = function(max, min) {
+	var randomIndex = Math.floor(Math.random() * (max - min)) + min;
+	var bit = this.trip[randomIndex];
+
+	if(bit === 0) {
+		this.trip[randomIndex] = 1;
+		var flipIndex = randomIndex;
+		while(flipIndex === randomIndex && this.trip[randomIndex] === 0) {
+			flipIndex = Math.floor(Math.random() * (max - min)) + min;
+		}
+		this.trip[flipIndex] = 0;
+	}
+
+}
+
 //mutation
 GeneticAlgorithm.prototype.mutate = function() {
-
+	for(var i = 0; i < 4; i++) {
+		var randomNumber = Math.floor(Math.random());
+		if((randomNumber % 2) == 0)
+			this.flipBit(this.startHotelIndex, this.startRestaurantIndex);
+	}
+	for(var i = 0; i < 2; i++) {
+		var randomNumber = Math.floor(Math.random());
+		if((randomNumber % 2) == 0)
+			this.flipBit(this.startAttractionIndex, this.startHotelIndex);
+	}
+	for(var i = 0; i < 4; i++) {
+		var randomNumber = Math.floor(Math.random());
+		if((randomNumber % 2) == 0)
+			this.flipBit(this.trip.length, this.startAttractionIndex);
+	}
 }
 
 //fitness
