@@ -1,9 +1,11 @@
 module.exports = Hotel
 
-var PlaceDetails = require("./PlaceDetails");
+var assert = require('assert'),
+	config = require("../config.js"),
+	PlaceDetailsRequest = require("../node_modules/googleplaces/lib/PlaceDetailsRequest.js");
 
 
-function Hotel(mood, city, state, hotel){
+function Hotel(trip, mood, city, state, hotel){
 	this.mood = mood; 
 	this.city = city;
 	this.state = state;
@@ -13,21 +15,27 @@ function Hotel(mood, city, state, hotel){
 	this.name = hotel.name;
 	this.price = hotel.price;
 	this.placeID = hotel.place_id;
-	this.ratings = hotel.rating;
+	this.rating = hotel.rating;
+
+
+	var placeDetailsRequest = new PlaceDetailsRequest(config.apiKey, config.outputFormat);
+
+	var curr = this;
+	
+	placeDetailsRequest({placeid: hotel.place_id}, function (error, response) {
+        if (error) throw error;
+        assert.equal(response.status, "OK", "Place details request response status is OK");
+        var reviews = response.result.reviews;
+        var reviewText = "";
+      	for(var r in reviews)
+    	  	reviewText += reviews[r].text;
+    	curr.reviewText = reviewText;
+    	curr.name = response.result.name;
+        curr.rating = response.result.rating;	
+
+    	trip.loadedHotels++;
+    	trip.complete();
+		        
+    });
+
 }
-
-
-Hotel.prototype.getMoodScore = function(mood, synonyms, relatedWords, antonyms, denom) {
-	console.log("get the score for the mood of the hotel");
-	this.placeID = "ChIJTfDFs1SXTYcRHlWMQvuZegA";			//marriot hotel
-
-	var placeDetails = new PlaceDetails();
-	var score = placeDetails.getReviewsText(this.placeID, synonyms, relatedWords, antonyms, denom);
-	console.log("hotel mood score: ",score);
-	return 0;
-};
-
-Hotel.prototype.getPriceScore = function(price) {
-	console.log("get the score for the price of the hotel");
-	return 0;
-};

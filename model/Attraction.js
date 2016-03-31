@@ -1,6 +1,10 @@
 module.exports = Attraction
 
-function Attraction(mood, city, state, attraction){
+var assert = require('assert'),
+	config = require("../config.js"),
+	PlaceDetailsRequest = require("../node_modules/googleplaces/lib/PlaceDetailsRequest.js");
+
+function Attraction(trip, mood, city, state, attraction){
 	this.mood = mood;
 	this.city = city;
 	this.state = state;
@@ -11,16 +15,27 @@ function Attraction(mood, city, state, attraction){
 	this.name = attraction.name;
 	this.price = attraction.price;
 	this.placeID = attraction.place_id;
-	this.ratings = attraction.rating;
+	this.rating = attraction.rating;
+
+
+	var placeDetailsRequest = new PlaceDetailsRequest(config.apiKey, config.outputFormat);
+
+	var curr = this;
+	
+	placeDetailsRequest({placeid: attraction.place_id}, function (error, response) {
+        if (error) throw error;
+        assert.equal(response.status, "OK", "Place details request response status is OK");
+        var reviews = response.result.reviews;
+        var reviewText = "";
+      	for(var r in reviews)
+    	  	reviewText += reviews[r].text;
+    	curr.reviewText = reviewText;
+    	curr.name = response.result.name;
+        curr.rating = response.result.rating;	
+
+    	trip.loadedAttractions++;
+    	trip.complete();
+		        
+    });
 
 }
-
-Attraction.prototype.getMoodScore = function(mood) {
-	console.log("get the score for the mood of the attraction");
-	return 0;
-};
-
-Attraction.prototype.getPriceScore = function(price) {
-	console.log("get the score for the price of the attraction");
-	return 0;
-};

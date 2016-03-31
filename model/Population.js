@@ -28,10 +28,10 @@ Population.prototype.getTrip = function(index) {
 	return this.population[index];
 }
 
-Population.prototype.getBestTrip = function() {
+Population.prototype.getBestTrip = function(currTrip) {
 	var fittest = this.population[0];
 	for(var i = 1; i < this.populationSize; i++) {
-		if(fittest.getFitness() < this.getTrip(i).getFitness())
+		if(fittest.getFitness(currTrip) < this.getTrip(i).getFitness(currTrip))
 			fittest = this.getTrip(i);
 	}
 	return fittest;

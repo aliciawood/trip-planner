@@ -5,12 +5,12 @@ var Restaurant = require("./Restaurant"),
 	Hotel = require("./Hotel"),
 	Population = require("./Population"),
 	GeneticAlgorithm = require("./genetic/GeneticAlgorithm"),
+	Evaluation = require("./genetic/Evaluation"),
 	assert = require('assert'),
 	RadarSearch = require("../node_modules/googleplaces/lib/RadarSearch.js"),
 	config = require("../config.js");
 
 function Trip(db, budget, mood, res){
-	console.log("TRIP GENERATOR!");
 	this.db = db;
 	this.budget = budget;
 	this.mood = mood;
@@ -29,6 +29,10 @@ function Trip(db, budget, mood, res){
 	this.hotelsQueried = [];
 	this.attractionsQueried = [];
 
+	this.loadedRestaurants = 0;
+	this.loadedAttractions = 0;
+	this.loadedHotels = 0;
+
 	var curr = this;
 
 
@@ -43,7 +47,7 @@ function Trip(db, budget, mood, res){
         if (error) throw error;
         assert.notEqual(response.results.length, 0, "Place search must not return 0 results");
         for(var i in response.results){
-        	var newRestaurant = new Restaurant(curr.mood, curr.city, curr.state, response.results[i]);
+        	var newRestaurant = new Restaurant(curr,curr.mood, curr.city, curr.state, response.results[i]);
     		curr.restaurantsQueried.push(newRestaurant);
         }
         curr.complete();
@@ -52,14 +56,14 @@ function Trip(db, budget, mood, res){
     parameters = {
         location: [40.2338438, -111.65853370000002],
         keyword: "lodging",
-        radius: '50'
+        radius: '200'
     };
 
     radarSearch(parameters, function (error, response) {
         if (error) throw error;
         assert.notEqual(response.results.length, 0, "Place search must not return 0 results");
         for(var i in response.results){
-        	var newHotel = new Hotel(curr.mood, curr.city, curr.state, response.results[i]);
+        	var newHotel = new Hotel(curr,curr.mood, curr.city, curr.state, response.results[i]);
         	curr.hotelsQueried.push(newHotel);
         }
         curr.complete();
@@ -75,42 +79,47 @@ function Trip(db, budget, mood, res){
         if (error) throw error;
         assert.notEqual(response.results.length, 0, "Place search must not return 0 results");
         for(var i in response.results){
-        	var newAttraction = new Attraction(curr.mood, curr.city, curr.state, response.results[i]);
+        	var newAttraction = new Attraction(curr,curr.mood, curr.city, curr.state, response.results[i]);
         	curr.attractionsQueried.push(newAttraction);
         }
         curr.complete();
     });
 
-
     // google maps api stuff
     this.generateLocation();
-
 }
+
 Trip.prototype.complete = function(){
-	if(this.restaurantsQueried.length!=0 && this.attractionsQueried.length!=0 && this.hotelsQueried.length!=0){
-		this.generateTrip();
+	//TODO add loadedHotels and loadedAttractions
+	if((this.loadedRestaurants == this.restaurantsQueried.length) && (this.loadedHotels == this.hotelsQueried.length) && (this.loadedAttractions == this.attractionsQueried.length)){
+		if(this.restaurantsQueried.length!=0 && this.attractionsQueried.length!=0 && this.hotelsQueried.length!=0)
+			this.generateEvaluation();
 	}
+}
+
+Trip.prototype.generateEvaluation = function(){
+	this.eval = new Evaluation(this);
 }
 
 
 Trip.prototype.generateTrip = function() {
-	console.log("GENERATE TRIP!");
-	
+	console.log("GENERATING TRIP!!!");
 	//genetic algorithm part!
 	var population = new Population(10, this.restaurantsQueried.length, this.hotelsQueried.length, this.attractionsQueried.length);
 	population.init();
-	console.log("before evolve: ", population.size());
 	this.evolvePopulation(population);
-	console.log("after evolve: ", population.size());
-	var bestTrip = population.getBestTrip();
+	var bestTrip = population.getBestTrip(this);			//bestTrip INSTANCEOF GeneticAlgorithm
 	this.printTrip(bestTrip);
+
+	var score = bestTrip.getFitness(this);
+	console.log("SCORE OF BEST TRIP: ",score);
 
 
 	//figure out how to split up budget between attractions and lodging.....
 	var moneyForAttractions = this.budget/2.0;
 	var moneyForHotels = this.budget/2.0;
 
-	this.generateLocation();
+	
 
 
 	this.res.render('tripoutput', {
@@ -146,7 +155,7 @@ Trip.prototype.tournamentSelection = function(population) {
 		tournament.addTrip(randomTrip);
 	}
 
-	var bestTrip = tournament.getBestTrip();
+	var bestTrip = tournament.getBestTrip(this);
 	return bestTrip;
 }
 
@@ -204,7 +213,6 @@ Trip.prototype.getRestaurants = function(trip){
 	for(var i=0; i<this.restaurantsQueried.length; i++){
 		if(restaurantBits[i] == 0)
 			continue;
-		// var newRestaurant = new Restaurant(this.mood, this.city, this.state, this.restaurantsQueried[i]);
 		var newRestaurant = this.restaurantsQueried[i];
 		this.restaurants.push(newRestaurant);
 	}
@@ -215,7 +223,6 @@ Trip.prototype.getAttractions = function(trip){
 	for(var i=0; i<this.attractionsQueried.length; i++){
 		if(attractionBits[i] == 0)
 			continue;
-		// var newAttraction = new Attraction(this.mood, this.city, this.state, this.attractionsQueried[i]);
 		var newAttraction = this.attractionsQueried[i];
 		this.attractions.push(newAttraction);
 	}
@@ -226,7 +233,6 @@ Trip.prototype.getHotels = function(trip){
 	for(var i=0; i<this.hotelsQueried.length; i++){
 		if(hotelBits[i] == 0)
 			continue;
-		// var newHotel = new Hotel(this.mood, this.city, this.state, this.hotelsQueried[i]);
 		var newHotel = this.hotelsQueried[i];
 		this.hotels.push(newHotel);
 	}

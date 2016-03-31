@@ -3,6 +3,8 @@ module.exports = GeneticAlgorithm
 var Restaurant = require("../Restaurant"),
 	Attraction = require("../Attraction"),
 	Hotel = require("../Hotel"),
+	Trip = require("../Trip"),
+	Evaluation = require("./Evaluation"),
 	assert = require('assert');
 
 function GeneticAlgorithm(numberofRestaurants, numberofHotels, numberofAttractions){
@@ -131,8 +133,15 @@ GeneticAlgorithm.prototype.mutate = function() {
 }
 
 //fitness
-GeneticAlgorithm.prototype.getFitness = function() {
-	return 1;
+GeneticAlgorithm.prototype.getFitness = function(currentTrip) {
+	currentTrip.restaurants = [];
+	currentTrip.hotels = [];
+	currentTrip.attractions = [];
+	currentTrip.printTrip(this);
+
+	var newScore = currentTrip.eval.calculateScore();
+
+	return newScore;
 }
 
 // getters --> need to check if this is what you want! --> return array of indexes, or whole chunk?

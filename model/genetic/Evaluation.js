@@ -2,15 +2,19 @@ module.exports = Evaluation
 
 var http = require('http');
 var et = require('elementtree');
+// var PlaceDetails = require('../PlaceDetails');
 
-function Evaluation(currTrip, budget, mood, db){
+function Evaluation(currTrip){
+	console.log("creating a new evaluation!");
 	this.trip = currTrip;
-	this.budget = budget;
-	this.mood = mood;
-	this.db = db;
+	console.log("currTrip State: ",this.trip.state)
+	this.budget = currTrip.budget;
+	this.mood = currTrip.mood;
+	this.db = currTrip.db;
 	this.synonyms = [];
 	this.relatedWords = [];
 	this.antonyms = [];
+	this.reviewScores = {};
 
 	this.SOME_CONSTANT = 1000.0;
 
@@ -27,8 +31,6 @@ function Evaluation(currTrip, budget, mood, db){
 	};
 
 	var curr = this;
-
-	console.log("STARTING REQUEST....");
 	callback = function(response) {
 	  var str = '';
 	  response.on('data', function (chunk) {
@@ -39,13 +41,10 @@ function Evaluation(currTrip, budget, mood, db){
 	  });
 	}
 	http.get("http://www.dictionaryapi.com/api/v1/references/thesaurus/xml/"+this.mood+"?key=4273db84-5343-4dc4-aae2-ed3b1b497d63", callback)
-
-
 }
 
 
 Evaluation.prototype.parseXML = function(xml){
-	console.log("parsing xml");
 	var etree = et.parse(xml);
 	var synonymsExtracted = etree.findall('./entry/sens/syn');
 	for(var s in synonymsExtracted){
@@ -89,30 +88,37 @@ Evaluation.prototype.parseXML = function(xml){
 
 	var curr = this;
 	var collection1 = this.db.get("culturalinfo");
+	console.log("STATE: ",this.trip.state);
     collection1.find({"state":this.trip.state},{},function(e,docs){
-    	var culturalinfo = docs[0]["info"];
-    	curr.calculateScore(culturalinfo);
+    	// console.log("DOCS: ",docs);
+    	// console.log("E: ",e);
+    	curr.culturalinfo = docs[0]["info"];
+    	curr.trip.generateTrip();
+    	// curr.calculateScore(culturalinfo);
     });
 
 }
 
-Evaluation.prototype.calculateScore = function(culturalinfo){
-	console.log("FINISHING REQUEST...");
-	var score = 0;
+
+
+Evaluation.prototype.calculateScore = function(){
+	this.score = 0;
 	//location fitting mood score
-	score += (this.scoreWeights["location"] * this.calculateLocationScore(culturalinfo));
+	var locationMoodScore = (this.scoreWeights["location"] * this.calculateMoodScore(this.culturalinfo));
+	this.score += locationMoodScore;
 
 	//restaurants score
-		
 	for(var r in this.trip.restaurants){
 		//individual restaurant score
 		var currRestaurant = this.trip.restaurants[r];
-		score += (this.scoreWeights["restMood"] * currRestaurant.getMoodScore(this.mood, this.synonyms, this.relatedWords, this.antonyms, this.SOME_CONSTANT));
-		var someMoney = 10;
-		score += (this.scoreWeights["restPrice"] * currRestaurant.getPriceScore(someMoney));
+		var restaurantMoodScore = (this.scoreWeights["restMood"] * this.calculateMoodScore(currRestaurant.name, currRestaurant.reviewText));
+		this.score += restaurantMoodScore;
+	// 	// score += (this.scoreWeights["restMood"] * currRestaurant.getMoodScore(this.mood, this.synonyms, this.relatedWords, this.antonyms, this.SOME_CONSTANT));
+	// 	var someMoney = 10;
+	// 	score += (this.scoreWeights["restPrice"] * currRestaurant.getPriceScore(someMoney));
 	}
 
-	score += (this.scoreWeights["restOverall"] * this.calculateRestaurantsScore());
+	// score += (this.scoreWeights["restOverall"] * this.calculateRestaurantsScore());
 	
 		
 
@@ -120,32 +126,36 @@ Evaluation.prototype.calculateScore = function(culturalinfo){
 	for(var r in this.trip.attractions){
 		//individual attractions score
 		var currAttraction = this.trip.attractions[r];
-		score += (this.scoreWeights["attrMood"] * currAttraction.getMoodScore(this.mood));
-		var someMoney = 10;
-		score += (this.scoreWeights["attrPrice"] * currAttraction.getPriceScore(someMoney));
+		var attractionMoodScore = this.scoreWeights["attrMood"] * this.calculateMoodScore(currAttraction.name,currAttraction.reviewText);
+		this.score += attractionMoodScore;
+	// 	var someMoney = 10;
+		// score += (this.scoreWeights["attrPrice"] * currAttraction.getPriceScore(someMoney));
 	}
 
-	score += (this.scoreWeights["attrOverall"] * this.calculateAttractionsScore());
+	// score += (this.scoreWeights["attrOverall"] * this.calculateAttractionsScore());
 
 
 	//hotel score
 	var hotel = this.trip.hotels[0];			//TODO change soon
-	score += (this.scoreWeights["hotelMood"] * hotel.getMoodScore(this.mood, this.synonyms, this.relatedWords, this.antonyms, this.SOME_CONSTANT));
-	var somePrice = 20;
-	score += (this.scoreWeights["hotelPrice"] * hotel.getPriceScore(somePrice));
+	this.score += (this.scoreWeights["hotelMood"] * this.calculateMoodScore(hotel.name,hotel.reviewText));
 
-	//overall score
+	// var somePrice = 20;
+	// score += (this.scoreWeights["hotelPrice"] * hotel.getPriceScore(somePrice));
 
-	console.log("OVERALL SCORE: ",score)
 
-	return score;
+	return this.score;
 };
 
-Evaluation.prototype.calculateLocationScore = function(culturalinfo){
+Evaluation.prototype.calculateMoodScore = function(name, text){
+	if(text==undefined)
+		return 0;
+	
+	if(name in this.reviewScores)
+		return this.reviewScores[name];
+
 	var synonymPoints = 10;
 	var relatedWordPoints = 5;
 	var antonymsPoints = -5;
-	
 
 	var sCount = 0;
 	var rwCount = 0;
@@ -155,7 +165,7 @@ Evaluation.prototype.calculateLocationScore = function(culturalinfo){
 		var syn = this.synonyms[s];
 		if(syn.length > 0){
 			var re = new RegExp(syn, 'g');
-			sCount += (culturalinfo.match(re) || []).length;
+			sCount += (text.match(re) || []).length;
 		}
 	}
 
@@ -163,7 +173,7 @@ Evaluation.prototype.calculateLocationScore = function(culturalinfo){
 		var rel = this.relatedWords[r];
 		if(rel.length > 0){
 			var re = new RegExp(rel, 'g');
-			rwCount += (culturalinfo.match(re) || []).length;
+			rwCount += (text.match(re) || []).length;
 		}
 	}
 
@@ -171,12 +181,14 @@ Evaluation.prototype.calculateLocationScore = function(culturalinfo){
 		var ant = this.antonyms[a];
 		if(ant.length > 0){
 			var re = new RegExp(ant, 'g');
-			aCount += (culturalinfo.match(re) || []).length;
+			aCount += (text.match(re) || []).length;
 		}
 	}
+	var moodScore = ((sCount*synonymPoints) + (rwCount*relatedWordPoints) + (aCount*antonymsPoints))/this.SOME_CONSTANT;
 
-	var placeScore = ((sCount*synonymPoints) + (rwCount*relatedWordPoints) + (aCount*antonymsPoints))/this.SOME_CONSTANT;
-	return placeScore;
+	this.reviewScores[name] = moodScore;
+
+	return moodScore;
 }
 
 Evaluation.prototype.calculateRestaurantsScore = function(){
