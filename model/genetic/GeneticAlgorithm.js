@@ -27,8 +27,7 @@ function GeneticAlgorithm(numberofRestaurants, numberofHotels, numberofAttractio
 
 
 GeneticAlgorithm.prototype.createRandomTrip = function() {
-	
-	//this.generateLocation();
+	//console.log("Creating random trip");
 	this.generateRestaurants();
 	this.generateHotel();
 	this.generateAttractions();
@@ -51,16 +50,18 @@ function sleep(milliseconds) {
 
 
 GeneticAlgorithm.prototype.markRandomBit = function(max, min) {
+	//console.log("min: ", min, "max:", max);
 	var randomIndex;
 	do {
 
 		randomIndex = Math.floor(Math.random() * (max - min)) + min;	
-		// console.log("randomindex: ",randomIndex);
+		//console.log("randomindex: ",randomIndex);
 	} while(this.trip[randomIndex] === 1);
 	this.trip[randomIndex] = 1;
 }
 
 GeneticAlgorithm.prototype.generateRestaurants = function(){
+	//console.log("Generating restaurants");
 	for(var i=0; i<(this.numDays*2); i++){
 		this.markRandomBit(this.startHotelIndex, this.startRestaurantIndex);
 	}
@@ -79,15 +80,27 @@ GeneticAlgorithm.prototype.generateAttractions = function(){
 }
 
 GeneticAlgorithm.prototype.flipBit = function(max, min) {
+	//console.log("in flip bit");
 	var randomIndex = Math.floor(Math.random() * (max - min)) + min;
 	var bit = this.trip[randomIndex];
+	//console.log("randome index: ", randomIndex, " value: ", bit);
 
 	if(bit === 0) {
 		this.trip[randomIndex] = 1;
-		var flipIndex = randomIndex;
-		while(flipIndex === randomIndex && this.trip[randomIndex] === 0) {
+		var flipIndex;
+		while(true) {
 			flipIndex = Math.floor(Math.random() * (max - min)) + min;
+			//console.log("INVERT BIT CHECK");
+			//console.log("change index: ", flipIndex, "value: ", this.trip[flipIndex]);
+			if(flipIndex === randomIndex)
+				continue;
+			else if(this.trip[flipIndex] === 0)
+				continue;
+			else
+				break;
 		}
+		//console.log("INVERTING");
+		//console.log("change index: ", flipIndex, "value: ", this.trip[flipIndex]);
 		this.trip[flipIndex] = 0;
 	}
 
@@ -95,10 +108,15 @@ GeneticAlgorithm.prototype.flipBit = function(max, min) {
 
 //mutation
 GeneticAlgorithm.prototype.mutate = function() {
+	//console.log("MUTATION");
 	for(var i = 0; i < 4; i++) {
+		//console.log("before:");
+		//console.log("restaurants:", this.getRestaurantBits().toString());
 		var randomNumber = Math.floor(Math.random());
 		if((randomNumber % 2) == 0)
 			this.flipBit(this.startHotelIndex, this.startRestaurantIndex);
+		//console.log("after:");
+		//console.log("restaurants:", this.getRestaurantBits().toString());
 	}
 	for(var i = 0; i < 2; i++) {
 		var randomNumber = Math.floor(Math.random());

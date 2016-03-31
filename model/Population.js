@@ -11,7 +11,6 @@ function Population(populationSize, numberofRestaurants, numberofHotels, numbero
 	this.numRestaurants = numberofRestaurants;
 	this.numHotels = numberofHotels;
 	this.numAttractions = numberofAttractions;
-
 	this.population = [];
 }
 

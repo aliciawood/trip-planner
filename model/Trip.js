@@ -37,27 +37,22 @@ function Trip(db, budget, mood, res){
     var parameters = {
         location: [40.2338438, -111.65853370000002],
         keyword: "restaurant",
-        radius: '50000'
+        radius: '100'
     };
     radarSearch(parameters, function (error, response) {
         if (error) throw error;
         assert.notEqual(response.results.length, 0, "Place search must not return 0 results");
-        console.log("number of restaurants: ", response.results.length);
         for(var i in response.results){
-        	// console.log("response: ",response.results[i].place_id);
         	var newRestaurant = new Restaurant(curr.mood, curr.city, curr.state, response.results[i]);
     		curr.restaurantsQueried.push(newRestaurant);
         }
         curr.complete();
-        
     });
-
-
    
-    /*parameters = {
+    parameters = {
         location: [40.2338438, -111.65853370000002],
         keyword: "lodging",
-        radius: '500'
+        radius: '50'
     };
 
     radarSearch(parameters, function (error, response) {
@@ -73,7 +68,7 @@ function Trip(db, budget, mood, res){
     parameters = {
         location: [40.2338438, -111.65853370000002],
         keyword: "establishment",
-        radius: '500'
+        radius: '50'
     };
 
     radarSearch(parameters, function (error, response) {
@@ -84,12 +79,11 @@ function Trip(db, budget, mood, res){
         	curr.attractionsQueried.push(newAttraction);
         }
         curr.complete();
-    });*/
+    });
 
 
     // google maps api stuff
     this.generateLocation();
-    this.getData();
 
 }
 Trip.prototype.complete = function(){
@@ -139,7 +133,7 @@ Trip.prototype.evolvePopulation = function(population) {
 		var trip1 = this.tournamentSelection(population);
 		var trip2 = this.tournamentSelection(population);
 		var newTrip = this.crossover(trip1, trip2);
-		//newTrip.mutate();
+		newTrip.mutate();
 		population.addTrip(newTrip);
 	}
 }
@@ -237,78 +231,6 @@ Trip.prototype.getHotels = function(trip){
 		this.hotels.push(newHotel);
 	}
 	
-}
-
-Trip.prototype.getData = function() {
-	var displayMap;
-	var service;
-	/*var test = "test";
-
-	displayMap = new google.maps.Map(document.getElementById('map'), {
-		center: {lat: 40.2338438, lng: -111.65853370000002},
-		zoom: 15 });
-
-
-	var geocoder = new google.maps.Geocoder();
-	var address = document.getElementById('address').value;
-
-	gmAPI.geocode({'address': address}, function(results, status) {
-		if (status === google.maps.GeocoderStatus.OK) {
-			var infowindow = new google.maps.InfoWindow();
-			google.maps.event.addListener(marker, 'click', function() {
-				infowindow.setContent(address);
-				infowindow.open(displayMap, this);
-			});
-
-			updatePoints(displayMap)
-		} else {
-			alert('Geocode was not successful for the following reason: ' + status);
-		}
-	});
-
-    function callback(results, status) {
-      if (status == google.maps.places.PlacesServiceStatus.OK) {
-        restaurants = results;
-        var list = document.getElementById('restaurantList');
-        list.innerHTML = '';
-        for (var i = 0; i < results.length; i++) {
-          var place = results[i];
-          updateRestaurants(place);
-          createMarker(place, displayMap);
-        }
-      }
-    }
-
-    function updateRestaurants(place) {
-      var list = document.getElementById('restaurantList');
-      var newEntry = document.createElement('li');
-      newEntry.appendChild(document.createTextNode(place.name));
-      list.appendChild(newEntry);
-    }
-
-    function updatePoints(map) {
-      var request = {
-            location: map.getCenter(),
-            radius: '500',
-            types: ["food"]
-      };
-      service = new google.maps.places.PlacesService(displayMap);
-      service.nearbySearch(request, callback);
-    }
-
-    function createMarker(place, map) {
-      var placeLoc = place.geometry.location;
-      var marker = new google.maps.Marker({
-        map: map,
-        position: place.geometry.location
-      });
-
-      var infowindow = new google.maps.InfoWindow();
-      google.maps.event.addListener(marker, 'click', function() {
-        infowindow.setContent(place.name);
-        infowindow.open(map, this);
-      });
-    }*/
 }
 
 Trip.prototype.generateRestaurantList = function() {
