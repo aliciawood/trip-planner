@@ -65,7 +65,7 @@ Trip.prototype.convertPlace = function(){
 }
 
 Trip.prototype.radarSearch = function(){
-	// var radarSearch = new RadarSearch(config.apiKey, config.outputFormat);
+	var radarSearch = new RadarSearch(config.apiKey, config.outputFormat);
 	var placeSearch = new PlaceSearch(config.apiKey, config.outputFormat);
 
 	var locationParam = [this.latitude, this.longitude];
@@ -73,12 +73,12 @@ Trip.prototype.radarSearch = function(){
     var parameters = {
         location: locationParam,
         keyword: "restaurant",
-        // radius: '100'
+        radius: '5000'
     };
 
     var curr = this;
-    placeSearch(parameters, function (error, response) {
-	// radarSearch(parameters, function (error, response) {
+    //placeSearch(parameters, function (error, response) {
+	 radarSearch(parameters, function (error, response) {
         if (error) throw error;
         assert.notEqual(response.results.length, 0, "Place search must not return 0 results");
         for(var i in response.results){
@@ -90,12 +90,12 @@ Trip.prototype.radarSearch = function(){
    
     parameters = {
         location: locationParam,
-        keyword: "lodging",
-        // radius: '200'
+        keyword: "campground",
+        radius: '5000'
     };
 
-    placeSearch(parameters, function (error, response) {
-    // radarSearch(parameters, function (error, response) {
+    //placeSearch(parameters, function (error, response) {
+     radarSearch(parameters, function (error, response) {
         if (error) throw error;
         assert.notEqual(response.results.length, 0, "Place search must not return 0 results");
         for(var i in response.results){
@@ -106,10 +106,10 @@ Trip.prototype.radarSearch = function(){
     });
 
     //getting points of interest--multiple calls
-    this.findAttractions(radarSearch);
+    this.findAttractions(radarSearch, locationParam);
 }
 
-Trip.prototype.findAttractions = function(radarSearch) {
+Trip.prototype.findAttractions = function(radarSearch, locationParam) {
 	var curr = this;
 	//doctor, hospital, veterinary_care
 	var attractions = ["art_gallery", "amusement_park", "aquarium", "bowling_alley",
@@ -117,9 +117,9 @@ Trip.prototype.findAttractions = function(radarSearch) {
 						"spa", "zoo"];
 	for(var i = 0; i < attractions.length; i++) {
 		var parameters = {
-	        location: [40.2338438, -111.65853370000002],
+	        location: locationParam,
 	        type: [attractions[i]],
-	        radius: '500'
+	        radius: '5000'
 	    };
 
 	    radarSearch(parameters, function (error, response) {
