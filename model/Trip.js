@@ -69,31 +69,58 @@ function Trip(db, budget, mood, res){
         curr.complete();
     });
 
-    parameters = {
-        location: [40.2338438, -111.65853370000002],
-        keyword: "establishment",
-        radius: '50'
-    };
-
-    radarSearch(parameters, function (error, response) {
-        if (error) throw error;
-        assert.notEqual(response.results.length, 0, "Place search must not return 0 results");
-        for(var i in response.results){
-        	var newAttraction = new Attraction(curr,curr.mood, curr.city, curr.state, response.results[i]);
-        	curr.attractionsQueried.push(newAttraction);
-        }
-        curr.complete();
-    });
+    //getting points of interest--multiple calls
+    this.findAttractions(radarSearch);
 
     // google maps api stuff
     this.generateLocation();
 }
 
+Trip.prototype.findAttractions = function(radarSearch) {
+	var curr = this;
+	//doctor, hospital, veterinary_care
+	var attractions = ["art_gallery", "amusement_park", "aquarium", "bowling_alley",
+						"movie_theater", "museum", "night_club", "park", "shopping_mall",
+						"spa", "zoo"];
+	for(var i = 0; i < attractions.length; i++) {
+		var parameters = {
+	        location: [40.2338438, -111.65853370000002],
+	        type: [attractions[i]],
+	        radius: '500'
+	    };
+
+	    radarSearch(parameters, function (error, response) {
+	        if (error) throw error;
+	        if(response.results.length == 0) console.log("didn't find", attractions[i]);
+	        //assert.notEqual(response.results.length, 0, "Place search must not return 0 results");
+	        for(var i in response.results){
+	        	var newAttraction = new Attraction(curr,curr.mood, curr.city, curr.state, response.results[i]);
+	        	curr.attractionsQueried.push(newAttraction);
+	        }
+	        curr.complete();
+	    });
+	}
+}
+
+Trip.prototype.filterAttractions = function() {
+	var newAttractions = [];
+	//this.attractionsQueried.forEach(function(element, index, array) {console.log(element.name);});
+	for( var i = 0; i < this.attractionsQueried.length; i++) {
+		var attractionName = this.attractionsQueried[i].name;
+		var match = newAttractions.find(function (attraction) {return attraction.name == attractionName;});
+		if(!match)
+			newAttractions.push(this.attractionsQueried[i]);
+	}
+	//newAttractions.forEach(function(element, index, array) {console.log(element.name);});
+}
+
 Trip.prototype.complete = function(){
 	//TODO add loadedHotels and loadedAttractions
 	if((this.loadedRestaurants == this.restaurantsQueried.length) && (this.loadedHotels == this.hotelsQueried.length) && (this.loadedAttractions == this.attractionsQueried.length)){
-		if(this.restaurantsQueried.length!=0 && this.attractionsQueried.length!=0 && this.hotelsQueried.length!=0)
+		if(this.restaurantsQueried.length!=0 && this.attractionsQueried.length!=0 && this.hotelsQueried.length!=0) {
+			this.filterAttractions();
 			this.generateEvaluation();
+		}
 	}
 }
 
