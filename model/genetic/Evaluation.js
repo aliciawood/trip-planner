@@ -2,15 +2,11 @@ module.exports = Evaluation
 
 var http = require('http');
 var et = require('elementtree');
-// var PlaceDetails = require('../PlaceDetails');
 
 function Evaluation(currTrip){
-	console.log("creating a new evaluation!");
 	this.trip = currTrip;
-	console.log("currTrip State: ",this.trip.state)
 	this.budget = currTrip.budget;
 	this.mood = currTrip.mood;
-	this.db = currTrip.db;
 	this.synonyms = [];
 	this.relatedWords = [];
 	this.antonyms = [];
@@ -84,18 +80,7 @@ Evaluation.prototype.parseXML = function(xml){
 
 	this.antonyms = this.antonyms.replace(/[\])}[{(]/g, '');
 	this.antonyms = this.antonyms.split(/[ ,]+/);
-
-
-	var curr = this;
-	var collection1 = this.db.get("culturalinfo");
-	console.log("STATE: ",this.trip.state);
-    collection1.find({"state":this.trip.state},{},function(e,docs){
-    	// console.log("DOCS: ",docs);
-    	// console.log("E: ",e);
-    	curr.culturalinfo = docs[0]["info"];
-    	curr.trip.generateTrip();
-    	// curr.calculateScore(culturalinfo);
-    });
+	this.trip.generateTrip();
 
 }
 
@@ -104,7 +89,7 @@ Evaluation.prototype.parseXML = function(xml){
 Evaluation.prototype.calculateScore = function(){
 	this.score = 0;
 	//location fitting mood score
-	var locationMoodScore = (this.scoreWeights["location"] * this.calculateMoodScore(this.culturalinfo));
+	var locationMoodScore = (this.scoreWeights["location"] * this.calculateMoodScore(this.trip.culturalinfo));
 	this.score += locationMoodScore;
 
 	//restaurants score

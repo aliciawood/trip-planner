@@ -8,6 +8,8 @@ var Restaurant = require("./Restaurant"),
 	Evaluation = require("./genetic/Evaluation"),
 	assert = require('assert'),
 	RadarSearch = require("../node_modules/googleplaces/lib/RadarSearch.js"),
+	PlaceSearch = require("../node_modules/googleplaces/lib/PlaceSearch.js"),
+	geocoder = require('geocoder'),
 	config = require("../config.js");
 
 function Trip(db, budget, mood, res){
@@ -33,17 +35,50 @@ function Trip(db, budget, mood, res){
 	this.loadedAttractions = 0;
 	this.loadedHotels = 0;
 
+	this.latitude = -1;
+	this.longitude = -1;
+
+	this.generateLocation();
+    
+}
+
+Trip.prototype.generateLocation = function(){
+	this.state = "Maryland";
 	var curr = this;
+	var collection1 = this.db.get("culturalinfo");
+    collection1.find({"state":this.state},{},function(e,docs){
+    	curr.culturalinfo = docs[0]["info"];
+    	curr.city = docs[0]["capital"];
+    	curr.convertPlace();
+    });
+}
 
+Trip.prototype.convertPlace = function(){
+	var curr = this;
+	geocoder.geocode(this.city +","+ this.state, function(err,data){
+		var location = data.results[0].geometry.location;
+		// console.log("DATA: ",location);
+		curr.latitude = location.lat;
+		curr.longitude = location.lng;
+		curr.radarSearch();
+	});	
+}
 
-    var radarSearch = new RadarSearch(config.apiKey, config.outputFormat);
+Trip.prototype.radarSearch = function(){
+	// var radarSearch = new RadarSearch(config.apiKey, config.outputFormat);
+	var placeSearch = new PlaceSearch(config.apiKey, config.outputFormat);
+
+	var locationParam = [this.latitude, this.longitude];
   	
     var parameters = {
-        location: [40.2338438, -111.65853370000002],
+        location: locationParam,
         keyword: "restaurant",
-        radius: '100'
+        // radius: '100'
     };
-    radarSearch(parameters, function (error, response) {
+
+    var curr = this;
+    placeSearch(parameters, function (error, response) {
+	// radarSearch(parameters, function (error, response) {
         if (error) throw error;
         assert.notEqual(response.results.length, 0, "Place search must not return 0 results");
         for(var i in response.results){
@@ -54,12 +89,13 @@ function Trip(db, budget, mood, res){
     });
    
     parameters = {
-        location: [40.2338438, -111.65853370000002],
+        location: locationParam,
         keyword: "lodging",
-        radius: '200'
+        // radius: '200'
     };
 
-    radarSearch(parameters, function (error, response) {
+    placeSearch(parameters, function (error, response) {
+    // radarSearch(parameters, function (error, response) {
         if (error) throw error;
         assert.notEqual(response.results.length, 0, "Place search must not return 0 results");
         for(var i in response.results){
@@ -71,9 +107,6 @@ function Trip(db, budget, mood, res){
 
     //getting points of interest--multiple calls
     this.findAttractions(radarSearch);
-
-    // google maps api stuff
-    this.generateLocation();
 }
 
 Trip.prototype.findAttractions = function(radarSearch) {
@@ -115,6 +148,9 @@ Trip.prototype.filterAttractions = function() {
 }
 
 Trip.prototype.complete = function(){
+	// this.state = "Utah";
+	// console.log("restaurantsQueried: ",this.restaurantsQueried.length);
+	// console.log("hotelsQueried: ",this.hotelsQueried.length);
 	//TODO add loadedHotels and loadedAttractions
 	if((this.loadedRestaurants == this.restaurantsQueried.length) && (this.loadedHotels == this.hotelsQueried.length) && (this.loadedAttractions == this.attractionsQueried.length)){
 		if(this.restaurantsQueried.length!=0 && this.attractionsQueried.length!=0 && this.hotelsQueried.length!=0) {
@@ -130,16 +166,21 @@ Trip.prototype.generateEvaluation = function(){
 
 
 Trip.prototype.generateTrip = function() {
-	console.log("GENERATING TRIP!!!");
+	// console.log("GENERATING TRIP!!!");
 	//genetic algorithm part!
 	var population = new Population(10, this.restaurantsQueried.length, this.hotelsQueried.length, this.attractionsQueried.length);
+	// console.log("AFTER Population");
 	population.init();
+	// console.log("AFTER INIT");
 	this.evolvePopulation(population);
+	// console.log("AFTER EVOLVE");
 	var bestTrip = population.getBestTrip(this);			//bestTrip INSTANCEOF GeneticAlgorithm
+	// console.log("AFTER GET BEST TRIP");
 	this.printTrip(bestTrip);
+	// console.log("AFTER PRINT TRIP");
 
 	var score = bestTrip.getFitness(this);
-	console.log("SCORE OF BEST TRIP: ",score);
+	// console.log("SCORE OF BEST TRIP: ",score);
 
 
 	//figure out how to split up budget between attractions and lodging.....
@@ -220,13 +261,6 @@ Trip.prototype.crossover = function(trip1, trip2) {
 	}
 
 	return newTrip;
-}
-
-Trip.prototype.generateLocation = function(){
-	this.city = "Provo";
-	this.state = "Alabama";
-	//wikipedia info
-	//other sites
 }
 
 Trip.prototype.printTrip = function(trip) {

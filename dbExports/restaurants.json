@@ -1,8 +1,0 @@
-{"_id":{"$oid":"56be623922619c1198376280"},"name":"Cafe Rio","genre":"Mexican","city":"Provo","state":"UT","rating":""}
-{"_id":{"$oid":"56be624122619c1198376281"},"name":"Pizza Pie Cafe","genre":"Italian","city":"Provo","state":"UT","rating":""}
-{"_id":{"$oid":"56be624722619c1198376282"},"name":"Panda Express","genre":"Chinese","city":"Provo","state":"UT","rating":""}
-{"_id":{"$oid":"56be625122619c1198376283"},"name":"Red Lobster","genre":"Seafood","city":"Orem","state":"UT","rating":""}
-{"_id":{"$oid":"56be625722619c1198376284"},"name":"Cupbop Korean BBQ","genre":"Korean","city":"Provo","state":"UT","rating":""}
-{"_id":{"$oid":"56be625d22619c1198376285"},"name":"Rumbi Island Grill","genre":"Hawaiian","city":"Provo","state":"UT","rating":""}
-{"_id":{"$oid":"56be626122619c1198376286"},"name":"In-N-Out","genre":"American","city":"Orem","state":"UT","rating":""}
-{"_id":{"$oid":"56be626922619c1198376287"},"name":"Outback Steakhouse","genre":"American","city":"Orem","state":"UT","rating":""}

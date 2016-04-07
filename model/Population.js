@@ -16,10 +16,14 @@ function Population(populationSize, numberofRestaurants, numberofHotels, numbero
 
 Population.prototype.init = function() {
 	//making population
+	// console.log("\tpop size: ",this.populationSize);
 	for(var i = 0; i < this.populationSize; i++) {
 		var trip = new GeneticAlgorithm(this.numRestaurants, this.numHotels, this.numAttractions);
+		// console.log("\tnew GeneticAlgorithm");
 		trip.createRandomTrip();
+		// console.log("createRandomTrip");
 		this.population.push(trip);
+		// console.log("add");
 	}
 
 };
