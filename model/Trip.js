@@ -111,7 +111,6 @@ Trip.prototype.radarSearch = function(){
 
 Trip.prototype.findAttractions = function(radarSearch, locationParam) {
 	var curr = this;
-	//doctor, hospital, veterinary_care
 	var attractions = ["art_gallery", "amusement_park", "aquarium", "bowling_alley",
 						"movie_theater", "museum", "night_club", "park", "shopping_mall",
 						"spa", "zoo"];
@@ -137,14 +136,24 @@ Trip.prototype.findAttractions = function(radarSearch, locationParam) {
 
 Trip.prototype.filterAttractions = function() {
 	var newAttractions = [];
+	//console.log("before:")
 	//this.attractionsQueried.forEach(function(element, index, array) {console.log(element.name);});
 	for( var i = 0; i < this.attractionsQueried.length; i++) {
 		var attractionName = this.attractionsQueried[i].name;
 		var match = newAttractions.find(function (attraction) {return attraction.name == attractionName;});
-		if(!match)
-			newAttractions.push(this.attractionsQueried[i]);
+		if(!match) {
+			//doctor, hospital, veterinary_care
+			var types = this.attractionsQueried[i].types;
+			match = types.find(function (type) {return type == "doctor" || type == "hospital" || type  == "veterinary_care" || type == "restaurant";});
+			if(!match)
+				newAttractions.push(this.attractionsQueried[i]);
+
+		}
 	}
-	//newAttractions.forEach(function(element, index, array) {console.log(element.name);});
+	this.attractionsQueried = newAttractions;
+	//console.log("after:")
+	//this.attractionsQueried.forEach(function(element, index, array) {console.log(element.name);});
+
 }
 
 Trip.prototype.complete = function(){
