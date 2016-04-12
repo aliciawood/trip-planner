@@ -57,7 +57,6 @@ Trip.prototype.convertPlace = function(){
 	var curr = this;
 	geocoder.geocode(this.city +","+ this.state, function(err,data){
 		var location = data.results[0].geometry.location;
-		// console.log("DATA: ",location);
 		curr.latitude = location.lat;
 		curr.longitude = location.lng;
 		curr.radarSearch();
@@ -134,32 +133,45 @@ Trip.prototype.findAttractions = function(radarSearch, locationParam) {
 	}
 }
 
+Trip.prototype.containsInArray = function(list, toFind){
+	for(var i in list){
+		var currAttractionName = list[i].name;
+		if(currAttractionName == toFind)
+			return true;
+	}
+	return false;
+}
+Trip.prototype.filterHelper=function(types){
+	for(var t in types){
+		var type = types[t];
+		if(type == "doctor" || type == "hospital" || type  == "veterinary_care" || type == "restaurant")
+			return true;
+	}
+	return false;
+}
+
 Trip.prototype.filterAttractions = function() {
 	var newAttractions = [];
-	//console.log("before:")
-	//this.attractionsQueried.forEach(function(element, index, array) {console.log(element.name);});
 	for( var i = 0; i < this.attractionsQueried.length; i++) {
 		var attractionName = this.attractionsQueried[i].name;
-		var match = newAttractions.find(function (attraction) {return attraction.name == attractionName;});
+		
+	
+		var match = this.containsInArray(newAttractions, attractionName);
 		if(!match) {
 			//doctor, hospital, veterinary_care
 			var types = this.attractionsQueried[i].types;
-			match = types.find(function (type) {return type == "doctor" || type == "hospital" || type  == "veterinary_care" || type == "restaurant";});
+			match = this.filterHelper(types);
 			if(!match)
 				newAttractions.push(this.attractionsQueried[i]);
 
 		}
+		
 	}
 	this.attractionsQueried = newAttractions;
-	//console.log("after:")
-	//this.attractionsQueried.forEach(function(element, index, array) {console.log(element.name);});
 
 }
 
 Trip.prototype.complete = function(){
-	// this.state = "Utah";
-	// console.log("restaurantsQueried: ",this.restaurantsQueried.length);
-	// console.log("hotelsQueried: ",this.hotelsQueried.length);
 	//TODO add loadedHotels and loadedAttractions
 	if((this.loadedRestaurants == this.restaurantsQueried.length) && (this.loadedHotels == this.hotelsQueried.length) && (this.loadedAttractions == this.attractionsQueried.length)){
 		if(this.restaurantsQueried.length!=0 && this.attractionsQueried.length!=0 && this.hotelsQueried.length!=0) {

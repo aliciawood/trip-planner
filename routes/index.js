@@ -15,7 +15,7 @@ router.post('/addinput', function(req, res) {
     var budget = req.body.budget;
     var mood = req.body.mood;
 
-
+    
     var trip = new Trip(req.db, budget, mood, res);
 });
 
