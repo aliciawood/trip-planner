@@ -21,25 +21,19 @@ function Attraction(trip, mood, city, state, attraction){
 	var placeDetailsRequest = new PlaceDetailsRequest(config.apiKey, config.outputFormat);
 
 	var curr = this;
-	
-	// console.log("PLACE ID: ",attraction.place_id);
 	placeDetailsRequest({placeid: attraction.place_id}, function (error, response) {
         if (error) throw error;
-        // console.log("RESPONSE: ",response);
         assert.equal(response.status, "OK", "Place details request response status is OK");
-        // if(response.states == "OK"){
-        	var reviews = response.result.reviews;
-	        var reviewText = "";
-	      	for(var r in reviews)
-	    	  	reviewText += reviews[r].text;
-	    	curr.reviewText = reviewText;
-	    	curr.name = response.result.name;
-	        curr.rating = response.result.rating;	
-	        curr.types = response.result.types;
-	    	trip.loadedAttractions++;
-	    	trip.complete();
-        // }
-        // trip.complete();
+    	var reviews = response.result.reviews;
+        var reviewText = "";
+      	for(var r in reviews)
+    	  	reviewText += reviews[r].text;
+    	curr.reviewText = reviewText;
+    	curr.name = response.result.name;
+        curr.rating = response.result.rating;	
+        curr.types = response.result.types;
+    	trip.loadedAttractions++;
+    	trip.complete();
         
     });
 

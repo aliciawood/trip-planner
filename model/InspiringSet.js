@@ -5,14 +5,23 @@ var TripPool = require("./TripPool"),
 	et = require('elementtree');
 	// Evaluation = require('./Evaluation');
 
-function InspiringSet(db, budget, mood){
+function InspiringSet(db, budget, mood, res){
 	this.db = db;
 	this.budget = budget;
 	this.mood = mood;
+	this.res = res;
 	
 	this.stateToTripPool = {};
 	this.reviewScores = {};
 	this.SOME_CONSTANT = 1000;
+
+	this.tripPoolsCompleted = 0;
+
+
+	this.weights  = {
+		"location": 1,
+		"restMood":1
+	}
 
 
 	//get synonyms for mood - store in this
@@ -86,9 +95,9 @@ InspiringSet.prototype.generateTopThreeLocations = function(){
 			var currStateInfo = docs[i];
 			var stateName = docs[i]['state'];
 			var stateCapital = docs[i]['capital'];
-			var stateScore = curr.calculateMoodScore(undefined,docs[i]['info']);
-			console.log(stateName,":",stateScore);
-			scoreToState[stateScore] = [stateName,stateCapital];
+			var culturalInfo = docs[i]['info'];
+			var stateScore = curr.calculateMoodScore(undefined,culturalInfo);
+			scoreToState[stateScore] = [stateName,stateCapital,culturalInfo];
 		}
 		//sort scores
 		var sorted = [];
@@ -100,30 +109,54 @@ InspiringSet.prototype.generateTopThreeLocations = function(){
 	    //then get them from the dictionary
 	    var firstState = scoreToState[sorted[0]][0];
 	    var firstCapital = scoreToState[sorted[0]][1];
+	    var firstCulturalInfo = scoreToState[sorted[0]][2];
 	    var secondState = scoreToState[sorted[1]][0];
 	    var secondCapital = scoreToState[sorted[1]][1];
+	    var secondCulturalInfo = scoreToState[sorted[1]][2];
 	    var thirdState = scoreToState[sorted[2]][0];
 	    var thirdCapital = scoreToState[sorted[2]][1];
+	    var thirdCulturalInfo = scoreToState[sorted[2]][2];
 	    console.log("FIRST: ",sorted[0],":",firstState);
 	    console.log("SECOND: ",sorted[1],":",secondState);
 	    console.log("THIRD: ",sorted[2],":",thirdState);
 
 	    //get the top three locations to go to
-	    curr.stateToTripPool[firstState] = new TripPool(firstState,firstCapital,this);
-	    curr.stateToTripPool[secondState] = new TripPool(secondState,secondCapital,this);
-	    curr.stateToTripPool[thirdState] = new TripPool(thirdState,thirdCapital,this);
+	    curr.stateToTripPool[firstState] = new TripPool(firstState,firstCapital,firstCulturalInfo,curr);
+	    curr.stateToTripPool[secondState] = new TripPool(secondState,secondCapital,secondCulturalInfo,curr);
+	    curr.stateToTripPool[thirdState] = new TripPool(thirdState,thirdCapital,thirdCulturalInfo,curr);
 
 	});
 }
 
 InspiringSet.prototype.findOverallBestTrip = function(){
-	//go through the stateToTripPool 
-	var maxScore = -1;
-	var bestState = "";
-	for(var key in this.stateToTripPool){
-		var currBestTrip = this.stateToTripPool[key].getBestTrip();
-		// var currScore = currBestTrip.getFitness(weights);
+	this.tripPoolsCompleted++;
+	if(this.tripPoolsCompleted == 3){
+		console.log("FIND BEST ONE!");
+		this.tripPoolsCompleted = 0;
+		//go through the stateToTripPool 
+		var maxScore = -1;
+		var bestTrip = null;
+		for(var key in this.stateToTripPool){
+			var currBestTrip = this.stateToTripPool[key].getBestTrip();
+			console.log("STATE: ",currBestTrip.state);
+			var currScore = currBestTrip.getFitness();
+			console.log("SCORE: ",currScore);
+			if(currScore > maxScore){
+				maxScore = currScore;
+				bestTrip = currBestTrip;
+			}
 
+		}
+		console.log("BEST TRIP!",bestTrip.state);
+		this.res.render('tripoutput', {
+	        "restaurantlist" : bestTrip.restaurants,
+	        "hotellist": bestTrip.hotels,
+	        "attractionlist": bestTrip.attractions,
+	        "city":bestTrip.city,
+	        "state":bestTrip.state,
+	        "money":this.budget,
+	        "mood":this.mood
+	    });
 	}
 }
 

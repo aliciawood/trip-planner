@@ -1,37 +1,32 @@
 module.exports = Trip
 
-function Trip(state, city){
-	// this.budget = budget;
-	// this.mood = mood;
-	
+function Trip(state, city, culturalInfo, inspiringSet){
 	this.state = state;
 	this.city = city;
+	this.culturalInfo = culturalInfo;
+	this.inspiringSet = inspiringSet;
 	this.restaurants = [];
 	this.hotels = [];
 	this.attractions = [];
-    
 }
 
 Trip.prototype.getFitness = function() {
-	
-};
-
-Trip.prototype.calculateScore = function(weights){
-	this.score = 0;
+	var score = 0;
 	//location fitting mood score
-	// var locationMoodScore = (this.scoreWeights["location"] * this.calculateMoodScore(undefined,this.trip.culturalinfo));
-	// this.score += locationMoodScore;
 
-	// //restaurants score
-	// for(var r in this.trip.restaurants){
-	// 	//individual restaurant score
-	// 	var currRestaurant = this.trip.restaurants[r];
-	// 	var restaurantMoodScore = (this.scoreWeights["restMood"] * this.calculateMoodScore(currRestaurant.name, currRestaurant.reviewText));
-	// 	this.score += restaurantMoodScore;
-	// // 	// score += (this.scoreWeights["restMood"] * currRestaurant.getMoodScore(this.mood, this.synonyms, this.relatedWords, this.antonyms, this.SOME_CONSTANT));
-	// // 	var someMoney = 10;
-	// // 	score += (this.scoreWeights["restPrice"] * currRestaurant.getPriceScore(someMoney));
-	// }
+	var locationMoodScore = (this.inspiringSet.weights["location"] * this.inspiringSet.calculateMoodScore(undefined,this.culturalInfo));
+	score += locationMoodScore;
+
+	//restaurants score
+	for(var r in this.restaurants){
+		//individual restaurant score
+		var currRestaurant = this.restaurants[r];
+		var restaurantMoodScore = (this.inspiringSet.weights["restMood"] * this.inspiringSet.calculateMoodScore(currRestaurant.name, currRestaurant.reviewText));
+		// console.log(currRestaurant.name,":",restaurantMoodScore);
+		this.score += restaurantMoodScore;
+		// 	var someMoney = 10;
+		// 	score += (this.scoreWeights["restPrice"] * currRestaurant.getPriceScore(someMoney));
+	}
 
 	// // score += (this.scoreWeights["restOverall"] * this.calculateRestaurantsScore());
 	
@@ -58,5 +53,5 @@ Trip.prototype.calculateScore = function(weights){
 	// score += (this.scoreWeights["hotelPrice"] * hotel.getPriceScore(somePrice));
 
 
-	return this.score;
+	return score;
 };

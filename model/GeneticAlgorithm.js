@@ -119,10 +119,6 @@ GeneticAlgorithm.prototype.getFitness = function() {
 	return trip.getFitness();
 }
 
-GeneticAlgorithm.prototype.getTrip = function(){
-
-}
-
 // getters --> need to check if this is what you want! --> return array of indexes, or whole chunk?
 
 GeneticAlgorithm.prototype.getRestaurantBits = function(){
