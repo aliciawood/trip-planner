@@ -1,13 +1,12 @@
 module.exports = GeneticAlgorithm
 
-var Restaurant = require("../Restaurant"),
-	Attraction = require("../Attraction"),
-	Hotel = require("../Hotel"),
-	Trip = require("../Trip"),
-	Evaluation = require("./Evaluation"),
+var Restaurant = require("./Restaurant"),
+	Attraction = require("./Attraction"),
+	Hotel = require("./Hotel"),
+	Trip = require("./Trip"),
 	assert = require('assert');
 
-function GeneticAlgorithm(numberofRestaurants, numberofHotels, numberofAttractions){
+function GeneticAlgorithm(numberofRestaurants, numberofHotels, numberofAttractions, tripPool){
 	this.numRestaurants = numberofRestaurants;
 	this.startRestaurantIndex = 0;
 
@@ -17,6 +16,8 @@ function GeneticAlgorithm(numberofRestaurants, numberofHotels, numberofAttractio
 
 	this.numAttractions = numberofAttractions;
 	this.startAttractionIndex = this.startHotelIndex + this.numHotels;
+
+	this.tripPool = tripPool;
 
 	this.numDays = 4;
 
@@ -112,16 +113,14 @@ GeneticAlgorithm.prototype.mutate = function() {
 }
 
 //fitness
-GeneticAlgorithm.prototype.getFitness = function(currentTrip) {
-	currentTrip.restaurants = [];
-	currentTrip.hotels = [];
-	currentTrip.attractions = [];
-	currentTrip.printTrip(this);
+GeneticAlgorithm.prototype.getFitness = function() {
+	var trip = this.tripPool.getTrip(this);
+	// var newScore = currentTrip.eval.calculateScore();
+	return trip.getFitness();
+}
 
-	var newScore = currentTrip.eval.calculateScore();
-	console.log("SCORE: ",newScore);
+GeneticAlgorithm.prototype.getTrip = function(){
 
-	return newScore;
 }
 
 // getters --> need to check if this is what you want! --> return array of indexes, or whole chunk?

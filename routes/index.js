@@ -1,8 +1,6 @@
 var express = require('express');
 var router = express.Router();
-var Trip = require('../model/Trip');
-
-var Evaluation = require('../model/genetic/Evaluation');
+var InspiringSet = require('../model/InspiringSet');
 
 /* GET home page. */
 router.get('/', function(req, res, next) {
@@ -12,28 +10,21 @@ router.get('/', function(req, res, next) {
 
 router.post('/addinput', function(req, res) {
 
-    var budget = req.body.budget;
-    var mood = req.body.mood;
-
     
-    var trip = new Trip(req.db, budget, mood, res);
-});
+    var inspiringSet = new InspiringSet(req.db, req.body.budget, req.body.mood)
+    // var generatedTrip = inspiringSet.getGeneratedTrip();
 
 
-router.get('/inputfortrip', function(req, res) {
-    
-    res.render('inputfortrip', { title: 'Enter Input for Trip' });
-});
+    // this.res.render('tripoutput', {
+    //     "restaurantlist" : generatedTrip.restaurants,
+    //     "hotellist": generatedTrip.hotels,
+    //     "attractionlist": generatedTrip.attractions,
+    //     "city":generatedTrip.city,
+    //     "state":generatedTrip.state,
+    //     "money":generatedTrip.budget,
+    //     "mood":generatedTrip.mood
+    // });
 
-router.get('/displaytrip', function(req, res) {
-    // res.render('displaytrip', { title: 'Your Trip' });
-    var db = req.db;
-    var collection = db.get('restaurants');
-    collection.find({},{},function(e,docs){
-        res.render('restaurantlist', {
-            "restaurantlist" : docs
-        });
-    });
 });
 
 router.get('/displayGoogleMaps', function(req, res) {

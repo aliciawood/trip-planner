@@ -33,7 +33,6 @@ function Attraction(trip, mood, city, state, attraction){
     	curr.name = response.result.name;
         curr.rating = response.result.rating;	
         curr.types = response.result.types;
-    	//console.log("Attraction types for", curr.name, ":\n", response.result.types);
     	trip.loadedAttractions++;
     	trip.complete();
     });

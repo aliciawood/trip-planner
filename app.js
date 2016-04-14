@@ -14,6 +14,12 @@ var routes = require('./routes/index');
 
 var app = express();
 
+globalWeights = {
+  "adventurous": {},
+  "relaxing":{},
+  "romantic":{}
+};
+
 // view engine setup
 app.set('views', path.join(__dirname, 'views'));      //where to find views
 app.set('view engine', 'jade');                       //what engine to use to render views
