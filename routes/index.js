@@ -10,22 +10,13 @@ router.get('/', function(req, res, next) {
 
 router.post('/addinput', function(req, res) {
 
-    
-    var inspiringSet = new InspiringSet(req.db, req.body.budget, req.body.mood)
-    // var generatedTrip = inspiringSet.getGeneratedTrip();
 
-
-    // this.res.render('tripoutput', {
-    //     "restaurantlist" : generatedTrip.restaurants,
-    //     "hotellist": generatedTrip.hotels,
-    //     "attractionlist": generatedTrip.attractions,
-    //     "city":generatedTrip.city,
-    //     "state":generatedTrip.state,
-    //     "money":generatedTrip.budget,
-    //     "mood":generatedTrip.mood
-    // });
+    var inspiringSet = new InspiringSet(req.db, req.body.budget, req.body.mood, res);
 
 });
+// router.post('',function(req,res){
+//     inspiringSet.updateWeights();
+// });
 
 router.get('/displayGoogleMaps', function(req, res) {
     //var city = req.session.city;

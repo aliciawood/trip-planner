@@ -49,7 +49,6 @@ Population.prototype.addTrip = function(trip) {
 Population.prototype.evolve = function(){
 	var len = this.population.length;
 	for(var i = 0; i < len; i++) {
-		console.log("EVOLVE LOOP");
 		var trip1 = this.tournamentSelection();
 		var trip2 = this.tournamentSelection();
 		var newTrip = this.crossover(trip1, trip2);

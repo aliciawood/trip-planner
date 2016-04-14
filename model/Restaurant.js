@@ -10,8 +10,6 @@ function Restaurant(trip, mood, city, state, restaurant){
 	this.state = state;
 
 	this.placeID = restaurant.place_id;
-	// this.genre = restaurant.genre;
-
 
 	var placeDetailsRequest = new PlaceDetailsRequest(config.apiKey, config.outputFormat);
 
@@ -19,7 +17,6 @@ function Restaurant(trip, mood, city, state, restaurant){
 	
 	placeDetailsRequest({placeid: restaurant.place_id}, function (error, response) {
         if (error) throw error;
-        // console.log("response: ",response);
         assert.equal(response.status, "OK", "Place details request response status is OK");
         var reviews = response.result.reviews;
         var reviewText = "";

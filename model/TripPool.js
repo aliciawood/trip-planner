@@ -11,9 +11,11 @@ var assert = require('assert'),
 	Trip = require("./Trip"),
 	Population = require("./Population");
 
-function TripPool(state, city){
+function TripPool(state, city, culturalInfo, inspiringSet){
 	this.state = state.trim();
 	this.city = city.trim();
+	this.culturalInfo = culturalInfo;
+	this.inspiringSet = inspiringSet;
 	this.latitude = -1;
 	this.longitude = -1;
 	this.allPossibleRestaurants = [];
@@ -24,8 +26,6 @@ function TripPool(state, city){
 	this.loadedAttractions = 0;
 	this.loadedHotels = 0;
 
-	console.log("NEW TRIP POOL FOR: ",this.city,",",this.state);
-
 	this.calculateLatAndLong();
 }
 
@@ -35,8 +35,6 @@ TripPool.prototype.calculateLatAndLong = function(){
 		var location = data.results[0].geometry.location;
 		curr.latitude = location.lat;
 		curr.longitude = location.lng;
-		console.log(curr.state," - lat: ",curr.latitude);
-		console.log(curr.state," - long: ",curr.longitude);
 		curr.radarSearch();
 	});	
 }
@@ -149,9 +147,9 @@ TripPool.prototype.filterAttractions = function() {
 }
 
 TripPool.prototype.complete = function(){
-	console.log("REST: ",this.loadedRestaurants,"/",this.allPossibleRestaurants.length);
-	console.log("Attractions: ",this.loadedAttractions,"/",this.allPossibleAttractions.length);
-	console.log("Hotels: ",this.loadedHotels,"/",this.allPossibleHotels.length);
+	// console.log("REST: ",this.loadedRestaurants,"/",this.allPossibleRestaurants.length);
+	// console.log("Attractions: ",this.loadedAttractions,"/",this.allPossibleAttractions.length);
+	// console.log("Hotels: ",this.loadedHotels,"/",this.allPossibleHotels.length);
 	if((this.loadedRestaurants == this.allPossibleRestaurants.length) && (this.loadedHotels == this.allPossibleHotels.length) && (this.loadedAttractions == this.allPossibleAttractions.length)){
 		if(this.allPossibleRestaurants.length!=0 && this.allPossibleAttractions.length!=0 && this.allPossibleHotels.length!=0) {
 			this.filterAttractions();
@@ -168,13 +166,15 @@ TripPool.prototype.generateTrip = function(){
 	//genetic algorithm part!
 	var population = new Population(10, this.loadedRestaurants, this.loadedHotels, this.loadedAttractions, this);
 	population.init();
-	console.log("INIT: ",population.size());
 	population.evolve();
 	console.log("AFTER EVOLVE: ",population.size());
 
-	this.bestTrip = population.getBestTrip(this);			//bestTrip INSTANCEOF GeneticAlgorithm
+	var bestGATrip = population.getBestTrip(this);			//bestTrip INSTANCEOF GeneticAlgorithm
+	this.bestTrip = this.getTrip(bestGATrip);
 
 	console.log("*****GOT A BEST TRIP");
+	this.inspiringSet.findOverallBestTrip();
+
 	//figure out how to split up budget between attractions and lodging.....
 	// var moneyForAttractions = this.budget/2.0;
 	// var moneyForHotels = this.budget/2.0;
@@ -189,7 +189,7 @@ TripPool.prototype.getBestTrip = function(){
 }
 
 TripPool.prototype.getTrip = function(gaTripString){
-	var toReturn = new Trip(this.state, this.city);
+	var toReturn = new Trip(this.state, this.city, this.culturalInfo, this.inspiringSet);
 	var restaurantBits = gaTripString.getRestaurantBits();
 	for(var i=0; i<this.allPossibleRestaurants.length; i++){
 		if(restaurantBits[i] == 0)
