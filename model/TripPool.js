@@ -8,6 +8,7 @@ var assert = require('assert'),
 	Restaurant = require("./Restaurant"),
 	Attraction = require("./Attraction"),
 	Hotel = require("./Hotel"),
+	Trip = require("./Trip"),
 	Population = require("./Population");
 
 function TripPool(state, city){
@@ -73,7 +74,7 @@ TripPool.prototype.radarSearch = function(){
     //placeSearch(parameters, function (error, response) {
      radarSearch(parameters, function (error, response) {
         if (error) throw error;
-        assert.notEqual(response.results.length, 0, "Place search must not return 0 results");
+        // assert.notEqual(response.results.length, 0, "Place search must not return 0 results");
         for(var i in response.results){
         	var newHotel = new Hotel(curr,curr.mood, curr.city, curr.state, response.results[i]);
         	curr.allPossibleHotels.push(newHotel);
@@ -148,6 +149,9 @@ TripPool.prototype.filterAttractions = function() {
 }
 
 TripPool.prototype.complete = function(){
+	console.log("REST: ",this.loadedRestaurants,"/",this.allPossibleRestaurants.length);
+	console.log("Attractions: ",this.loadedAttractions,"/",this.allPossibleAttractions.length);
+	console.log("Hotels: ",this.loadedHotels,"/",this.allPossibleHotels.length);
 	if((this.loadedRestaurants == this.allPossibleRestaurants.length) && (this.loadedHotels == this.allPossibleHotels.length) && (this.loadedAttractions == this.allPossibleAttractions.length)){
 		if(this.allPossibleRestaurants.length!=0 && this.allPossibleAttractions.length!=0 && this.allPossibleHotels.length!=0) {
 			this.filterAttractions();
@@ -170,7 +174,7 @@ TripPool.prototype.generateTrip = function(){
 
 	this.bestTrip = population.getBestTrip(this);			//bestTrip INSTANCEOF GeneticAlgorithm
 
-
+	console.log("*****GOT A BEST TRIP");
 	//figure out how to split up budget between attractions and lodging.....
 	// var moneyForAttractions = this.budget/2.0;
 	// var moneyForHotels = this.budget/2.0;

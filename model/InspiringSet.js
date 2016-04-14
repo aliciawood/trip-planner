@@ -14,7 +14,6 @@ function InspiringSet(db, budget, mood){
 	this.reviewScores = {};
 	this.SOME_CONSTANT = 1000;
 
-	// this.eval = new Evaluation();
 
 	//get synonyms for mood - store in this
 	this.getRelatedWordsForMood();    
@@ -78,7 +77,6 @@ InspiringSet.prototype.parseXML = function(xml){
 }
 
 InspiringSet.prototype.generateTopThreeLocations = function(){
-	// this.eval.addInspiringSet(this);
 
 	var curr = this;
 	var collection1 = this.db.get("culturalinfo");

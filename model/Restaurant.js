@@ -19,6 +19,7 @@ function Restaurant(trip, mood, city, state, restaurant){
 	
 	placeDetailsRequest({placeid: restaurant.place_id}, function (error, response) {
         if (error) throw error;
+        // console.log("response: ",response);
         assert.equal(response.status, "OK", "Place details request response status is OK");
         var reviews = response.result.reviews;
         var reviewText = "";

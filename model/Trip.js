@@ -1,8 +1,8 @@
 module.exports = Trip
 
 function Trip(state, city){
-	this.budget = budget;
-	this.mood = mood;
+	// this.budget = budget;
+	// this.mood = mood;
 	
 	this.state = state;
 	this.city = city;
