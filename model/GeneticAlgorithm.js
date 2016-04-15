@@ -116,7 +116,6 @@ GeneticAlgorithm.prototype.mutate = function() {
 //fitness
 GeneticAlgorithm.prototype.getFitness = function() {
 	var trip = this.tripPool.getTrip(this);
-	// var newScore = currentTrip.eval.calculateScore();
 	if (this.score === -1)
 		this.score = trip.getFitness();
 	return this.score;

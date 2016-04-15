@@ -25,17 +25,6 @@ function InspiringSet(db, budget, mood, res){
 		this.weights = globalWeights["romantic"];
 	else
 		this.weights = globalWeights["happy"];
-	/*this.weights  = {
-		"location": 1,
-		"restMood":1,
-		"attrMood":1,
-		"hotelMood":1,
-		"price":1,
-		"restRating":1,
-		"attrRating":1,
-		"hotelRating":1,
-		"overallRating":1
-	}*/
 
 	//get synonyms for mood - store in this
 	this.getRelatedWordsForMood();    

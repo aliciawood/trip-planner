@@ -48,7 +48,7 @@ TripPool.prototype.radarSearch = function(){
     var parameters = {
         location: locationParam,
         keyword: "restaurant",
-        radius: '50000'
+        radius: '4000'
     };
 
     var curr = this;
@@ -66,7 +66,7 @@ TripPool.prototype.radarSearch = function(){
     parameters = {
         location: locationParam,
         keyword: "lodging",
-        radius: '50000'
+        radius: '900'
     };
 
     //placeSearch(parameters, function (error, response) {
@@ -93,7 +93,7 @@ TripPool.prototype.findAttractions = function(radarSearch, locationParam) {
 		var parameters = {
 	        location: locationParam,
 	        type: [attractions[i]],
-	        radius: '50000'
+	        radius: '5000'
 	    };
 
 	    radarSearch(parameters, function (error, response) {
@@ -154,6 +154,9 @@ TripPool.prototype.complete = function(){
 		if(this.allPossibleRestaurants.length!=0 && this.allPossibleAttractions.length!=0 && this.allPossibleHotels.length!=0) {
 			this.filterAttractions();
 			this.generateTrip();
+			console.log("restaurants: ",this.loadedRestaurants);
+			console.log("attractions: ",this.loadedAttractions);
+			console.log("hotels: ",this.loadedHotels);
 		}
 	}
 }

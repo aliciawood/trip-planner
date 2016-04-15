@@ -1,6 +1,7 @@
 var express = require('express');
 var router = express.Router();
 var InspiringSet = require('../model/InspiringSet');
+var Perceptron = require('../model/perceptron/Perceptron');
 
 /* GET home page. */
 router.get('/', function(req, res, next) {
@@ -25,6 +26,10 @@ router.post('/autorate',function(req,res){
     console.log("mood: ",mood);
     var weights = req.body.weights;
     console.log("weights: ",weights);
+
+
+    var perceptron = new Perceptron(subscores,overallScore, weights, mood);
+    perceptron.run();
 
     //update weights
     //     inspiringSet.updateWeights();
