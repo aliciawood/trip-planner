@@ -132,7 +132,6 @@ TripPool.prototype.filterAttractions = function() {
 		if(!match) {
 			//doctor, hospital, veterinary_care
 			var types = this.allPossibleAttractions[i].types;
-			console.log("attraction: ", this.allPossibleAttractions[i].name, " at: ", this.allPossibleAttractions[i].geometry);
 			match = this.filterHelper(types);
 			if(!match)
 				newAttractions.push(this.allPossibleAttractions[i]);
