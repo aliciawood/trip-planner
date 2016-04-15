@@ -1,6 +1,6 @@
 module.exports = Perceptron
 
-function Perceptron(tripScores, tripOverallScore, tripWeights, mood) {
+function Perceptron(tripScores, tripOverallScore, tripWeights, mood, userRatings) {
 	this.tripSubscores = tripScores.split(",");                      //array
     for(var i in this.tripSubscores)
         this.tripSubscores[i] = +this.tripSubscores[i];
@@ -21,6 +21,23 @@ function Perceptron(tripScores, tripOverallScore, tripWeights, mood) {
     //attrRating
     //hotelRating
     //overallRating
+
+    var userRatingMap = {
+    	1 : 0.2,
+    	2 : 0.4,
+    	3 : 0.6,
+    	4 : 0.8,
+    	5 : 1
+    };
+
+    if(userRatings.length > 0) {
+    	//overall trip, rstaurants, hotels, attractions, price
+    	var overallTrip = userRatings[0];
+    	var restaurantScore = userRatings[1];
+    	var hotelScore = userRatings[2];
+    	var attractionScore
+    	this.weights = [?,userRatings[2]];
+    }
 
     this.peopleWeightsDicionary = {
         1 : [.2,.2,.2,.2,1,.2,.2,.2,.2],
