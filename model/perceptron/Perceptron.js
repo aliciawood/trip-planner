@@ -8,7 +8,7 @@ function Perceptron(tripScores, tripOverallScore, tripWeights, mood) {
 	this.tripWeights = tripWeights.split(",");                    //array
     for(var i in this.tripWeights)
         this.tripWeights[i] = +this.tripWeights[i];
-	this.learningRate = 0.5;
+	this.learningRate = 0.8;
 	this.theta = 0;
     this.mood = mood;
 

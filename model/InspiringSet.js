@@ -107,32 +107,40 @@ InspiringSet.prototype.generateTopThreeLocations = function(){
 	        sorted[sorted.length] = key;
 	    sorted.sort(function(a, b){return b-a});
 
+	    var rand1 = Math.floor((Math.random() * sorted.length) + 2);
+	    var rand2 = Math.floor((Math.random() * sorted.length) + 2);
 	    //get the top three
 	    //then get them from the dictionary
-	    var firstState = scoreToState[sorted[0]][0];
-	    var firstCapital = scoreToState[sorted[0]][1];
-	    var firstCulturalInfo = scoreToState[sorted[0]][2];
-	    var secondState = scoreToState[sorted[1]][0];
-	    var secondCapital = scoreToState[sorted[1]][1];
-	    var secondCulturalInfo = scoreToState[sorted[1]][2];
-	    var thirdState = scoreToState[sorted[2]][0];
-	    var thirdCapital = scoreToState[sorted[2]][1];
-	    var thirdCulturalInfo = scoreToState[sorted[2]][2];
-	    console.log("FIRST: ",sorted[0],":",firstState);
-	    console.log("SECOND: ",sorted[1],":",secondState);
-	    console.log("THIRD: ",sorted[2],":",thirdState);
+	    var thirdState = scoreToState[sorted[0]][0];
+	    var thirdCapital = scoreToState[sorted[0]][1];
+	    var thirdCulturalInfo = scoreToState[sorted[0]][2];
+	    var fourthState = scoreToState[sorted[1]][0];
+	    var fourthCapital = scoreToState[sorted[1]][1];
+	    var fourthCulturalInfo = scoreToState[sorted[1]][2];
+
+	    var firstState = scoreToState[sorted[rand1]][0];
+	    var firstCapital = scoreToState[sorted[rand1]][1];
+	    var firstCulturalInfo = scoreToState[sorted[rand1]][2];
+	    var secondState = scoreToState[sorted[rand2]][0];
+	    var secondCapital = scoreToState[sorted[rand2]][1];
+	    var secondCulturalInfo = scoreToState[sorted[rand2]][2];
+	    console.log("FIRST: ",sorted[rand1],":",firstState);
+	    console.log("SECOND: ",sorted[rand2],":",secondState);
+	    console.log("THIRD: ",sorted[0],":",thirdState);
+	    console.log("FOURTH: ",sorted[1],":",fourthState);
 
 	    //get the top three locations to go to
 	    curr.stateToTripPool[firstState] = new TripPool(firstState,firstCapital,firstCulturalInfo,curr);
 	    curr.stateToTripPool[secondState] = new TripPool(secondState,secondCapital,secondCulturalInfo,curr);
 	    curr.stateToTripPool[thirdState] = new TripPool(thirdState,thirdCapital,thirdCulturalInfo,curr);
+	    curr.stateToTripPool[fourthState] = new TripPool(fourthState,fourthCapital,fourthCulturalInfo,curr);
 
 	});
 }
 
 InspiringSet.prototype.findOverallBestTrip = function(){
 	this.tripPoolsCompleted++;
-	if(this.tripPoolsCompleted == 3){
+	if(this.tripPoolsCompleted == 4){
 		console.log("FIND BEST ONE!");
 		this.tripPoolsCompleted = 0;
 		//go through the stateToTripPool 
