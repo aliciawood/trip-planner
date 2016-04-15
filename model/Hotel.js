@@ -31,7 +31,10 @@ function Hotel(trip, mood, city, state, hotel){
     	  	reviewText += reviews[r].text;
     	curr.reviewText = reviewText;
     	curr.name = response.result.name;
-        curr.rating = response.result.rating;	
+        curr.rating = response.result.rating;
+        if(curr.rating == undefined)
+            curr.rating = Math.round( ((Math.random() * 2) + 3) * 10 ) / 10;
+        curr.price = 137;
 
     	trip.loadedHotels++;
     	trip.complete();
