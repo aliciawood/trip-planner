@@ -65,7 +65,7 @@ TripPool.prototype.radarSearch = function(){
    
     parameters = {
         location: locationParam,
-        keyword: "campground",
+        keyword: "lodging",
         radius: '5000'
     };
 
