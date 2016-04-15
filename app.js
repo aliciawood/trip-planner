@@ -15,9 +15,50 @@ var routes = require('./routes/index');
 var app = express();
 
 globalWeights = {
-  "adventurous": {},
-  "relaxing":{},
-  "romantic":{}
+  "adventurous": {
+      "location": 0.3,
+      "restMood": 0.5,
+      "attrMood": 1,
+      "hotelMood": 0.3,
+      "price": 0.1,
+      "restRating": 0.5,
+      "attrRating": 1,
+      "hotelRating": 0.3,
+      "overallRating": 1
+  },
+  "relaxing":{
+      "location": 1,
+      "restMood": 1,
+      "attrMood": 1,
+      "hotelMood": 1,
+      "price": 1,
+      "restRating": 1,
+      "attrRating": 1,
+      "hotelRating": 1,
+      "overallRating": 1
+  },
+  "romantic":{
+      "location": 1,
+      "restMood": 1,
+      "attrMood": 1,
+      "hotelMood": 1,
+      "price": 0.5,
+      "restRating": 1,
+      "attrRating": 1,
+      "hotelRating": 1,
+      "overallRating": 1
+  },
+  "happy":{
+      "location": 1,
+      "restMood": 1,
+      "attrMood": 1,
+      "hotelMood": 1,
+      "price": 0.5,
+      "restRating": 1,
+      "attrRating": 1,
+      "hotelRating": 1,
+      "overallRating": 1
+  }
 };
 
 // view engine setup
