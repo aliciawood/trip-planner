@@ -36,7 +36,7 @@ function Perceptron(tripScores, tripOverallScore, tripWeights, mood, userRatings
     	var restaurantScore = userRatings[1];
     	var hotelScore = userRatings[2];
     	var attractionScore
-    	this.weights = [?,userRatings[2]];
+    	this.weights = [0,userRatings[2]];
     }
 
     this.peopleWeightsDicionary = {

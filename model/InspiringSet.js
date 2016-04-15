@@ -158,6 +158,9 @@ InspiringSet.prototype.findOverallBestTrip = function(){
 
 		}
 		console.log("BEST TRIP!",bestTrip.state);
+		console.log("BEST TRIP! location",bestTrip.lat);
+		console.log("BEST TRIP! location",bestTrip.long);
+		
 		this.res.render('tripoutput', {
 	        "restaurantlist" : bestTrip.restaurants,
 	        "hotellist": bestTrip.hotels,
@@ -167,7 +170,9 @@ InspiringSet.prototype.findOverallBestTrip = function(){
 	        "money":this.budget,
 	        "mood":this.mood,
 	        "bestTrip":bestTrip,
-	        "weights":this.weights
+	        "weights":this.weights,
+	        "latitude":bestTrip.lat,
+	        "longitude":bestTrip.long
 	    });
 	}
 }

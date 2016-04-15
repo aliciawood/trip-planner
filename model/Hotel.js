@@ -36,6 +36,8 @@ function Hotel(trip, mood, city, state, hotel){
             curr.rating = Math.round( ((Math.random() * 2) + 3) * 10 ) / 10;
         curr.price = 137;
 
+        curr.geometry = response.result.geometry.location;
+
     	trip.loadedHotels++;
     	trip.complete();
 		        
