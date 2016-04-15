@@ -24,6 +24,7 @@ function GeneticAlgorithm(numberofRestaurants, numberofHotels, numberofAttractio
 	this.geneLength = numberofRestaurants + numberofHotels + numberofAttractions;
 	this.trip = Array.apply(null, Array(this.geneLength)).map(Number.prototype.valueOf, 0);
 	
+	this.score = -1;
 }
 
 
@@ -31,7 +32,7 @@ GeneticAlgorithm.prototype.createRandomTrip = function() {
 	this.generateRestaurants();
 	this.generateHotel();
 	this.generateAttractions();
-
+	this.getFitness();
 };
 
 GeneticAlgorithm.prototype.printTrip = function() {
@@ -116,7 +117,9 @@ GeneticAlgorithm.prototype.mutate = function() {
 GeneticAlgorithm.prototype.getFitness = function() {
 	var trip = this.tripPool.getTrip(this);
 	// var newScore = currentTrip.eval.calculateScore();
-	return trip.getFitness();
+	if (this.score === -1)
+		this.score = trip.getFitness();
+	return this.score;
 }
 
 // getters --> need to check if this is what you want! --> return array of indexes, or whole chunk?

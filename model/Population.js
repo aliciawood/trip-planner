@@ -31,10 +31,14 @@ Population.prototype.getTrip = function(index) {
 
 Population.prototype.getBestTrip = function() {
 	var fittest = this.population[0];
+	var fittestIndex = 0;
 	for(var i = 1; i < this.population.length; i++) {
-		if(fittest.getFitness() < this.getTrip(i).getFitness())
+		if(fittest.getFitness() < this.getTrip(i).getFitness()) {
 			fittest = this.getTrip(i);
+			fittestIndex = i;
+		}
 	}
+	this.population.splice(fittestIndex, 1);
 	return fittest;
 }
 
@@ -59,6 +63,7 @@ Population.prototype.evolve = function(){
 		var trip2 = this.tournamentSelection();
 		var newTrip = this.crossover(trip1, trip2);
 		newTrip.mutate();
+		newTrip.getFitness();
 		children.push(newTrip);
 	}
 	this.addChildren(children);
@@ -67,14 +72,15 @@ Population.prototype.evolve = function(){
 
 Population.prototype.survivalOfTheFittest = function() {
 	var initialSize = this.population.length;
-	console.log("before surivial of fittest:", initialSize);
+	var maxSize = 50;
+	if(initialSize < maxSize)
+		return;
 	var survivors = [];
-	for(var i = 0; i < initialSize; i++) {
+	for(var i = 0; i < maxSize; i++) {
 		var trip = this.getBestTrip();
 		survivors.push(trip);
 	}
 	this.population = survivors;
-	console.log("after survival of fittest:", this.population.size);
 }
 
 Population.prototype.crossover = function(trip1, trip2) {
