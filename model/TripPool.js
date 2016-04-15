@@ -48,7 +48,7 @@ TripPool.prototype.radarSearch = function(){
     var parameters = {
         location: locationParam,
         keyword: "restaurant",
-        radius: '5000'
+        radius: '500'
     };
 
     var curr = this;
@@ -65,8 +65,8 @@ TripPool.prototype.radarSearch = function(){
    
     parameters = {
         location: locationParam,
-        keyword: "campground",
-        radius: '5000'
+        keyword: "lodging",
+        radius: '500'
     };
 
     //placeSearch(parameters, function (error, response) {
@@ -93,7 +93,7 @@ TripPool.prototype.findAttractions = function(radarSearch, locationParam) {
 		var parameters = {
 	        location: locationParam,
 	        type: [attractions[i]],
-	        radius: '5000'
+	        radius: '1500'
 	    };
 
 	    radarSearch(parameters, function (error, response) {
@@ -164,10 +164,15 @@ TripPool.prototype.complete = function(){
 
 TripPool.prototype.generateTrip = function(){
 	//genetic algorithm part!
-	var population = new Population(10, this.loadedRestaurants, this.loadedHotels, this.loadedAttractions, this);
+	var population = new Population(50, this.loadedRestaurants, this.loadedHotels, this.loadedAttractions, this);
 	population.init();
-	population.evolve();
-	console.log("AFTER EVOLVE: ",population.size());
+
+	var generations = 35;
+	for(var g in generations) {
+		population.evolve();
+		population.survivalOfTheFittest();
+		console.log("AFTER EVOLVE: ",population.size());
+	}
 
 	var bestGATrip = population.getBestTrip(this);			//bestTrip INSTANCEOF GeneticAlgorithm
 	this.bestTrip = this.getTrip(bestGATrip);

@@ -31,7 +31,7 @@ Population.prototype.getTrip = function(index) {
 
 Population.prototype.getBestTrip = function() {
 	var fittest = this.population[0];
-	for(var i = 1; i < this.populationSize; i++) {
+	for(var i = 1; i < this.population.length; i++) {
 		if(fittest.getFitness() < this.getTrip(i).getFitness())
 			fittest = this.getTrip(i);
 	}
@@ -46,17 +46,37 @@ Population.prototype.addTrip = function(trip) {
 	this.population.push(trip);
 }
 
+Population.prototype.addChildren = function(children) {
+	for(var i in children)
+		this.population.push(children[i]);
+}
+
 Population.prototype.evolve = function(){
-	var len = this.population.length;
+	var len = this.population.length/2;
+	var children = [];
 	for(var i = 0; i < len; i++) {
 		var trip1 = this.tournamentSelection();
 		var trip2 = this.tournamentSelection();
 		var newTrip = this.crossover(trip1, trip2);
 		newTrip.mutate();
-		this.addTrip(newTrip);
+		children.push(newTrip);
 	}
+	this.addChildren(children);
 
 }
+
+Population.prototype.survivalOfTheFittest = function() {
+	var initialSize = this.population.length;
+	console.log("before surivial of fittest:", initialSize);
+	var survivors = [];
+	for(var i = 0; i < initialSize; i++) {
+		var trip = this.getBestTrip();
+		survivors.push(trip);
+	}
+	this.population = survivors;
+	console.log("after survival of fittest:", this.population.size);
+}
+
 Population.prototype.crossover = function(trip1, trip2) {
 	var newTrip = new GeneticAlgorithm(this.numRestaurants, this.numHotels, this.numAttractions, this.tripPool);
 
@@ -95,11 +115,12 @@ Population.prototype.crossover = function(trip1, trip2) {
 
 
 Population.prototype.tournamentSelection = function() {
-	var tournament = new Population(6, this.numRestaurants, this.numHotels, this.numAttractions, this.tripPool);
-	for(var i = 0; i < 6; i++) {
+	var length = 12;
+	var tournament = new Population(length, this.numRestaurants, this.numHotels, this.numAttractions, this.tripPool);
+	for(var i = 0; i < length; i++) {
 		var randomTripIndex = Math.floor(Math.random() * this.population.length);
 		var randomTrip = this.population[randomTripIndex];
 		tournament.addTrip(randomTrip);
 	}
-	return tournament.getBestTrip(this);;
+	return tournament.getBestTrip(this);
 }
