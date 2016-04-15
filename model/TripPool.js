@@ -153,10 +153,6 @@ TripPool.prototype.complete = function(){
 	if((this.loadedRestaurants == this.allPossibleRestaurants.length) && (this.loadedHotels == this.allPossibleHotels.length) && (this.loadedAttractions == this.allPossibleAttractions.length)){
 		if(this.allPossibleRestaurants.length!=0 && this.allPossibleAttractions.length!=0 && this.allPossibleHotels.length!=0) {
 			this.filterAttractions();
-			
-			console.log("Restaurants: ",this.allPossibleRestaurants.length);
-			console.log("Attractions: ",this.allPossibleAttractions.length);
-			console.log("Hotels: ",this.allPossibleHotels.length);
 			this.generateTrip();
 		}
 	}

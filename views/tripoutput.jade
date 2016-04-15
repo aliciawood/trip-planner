@@ -80,7 +80,13 @@ block content
   input#Element4(type="radio", name="RadioGroup", checked=false)
   |4  
   input#Element5(type="radio", name="RadioGroup", checked=false)
-  |5  
+  |5
 
+
+  form#formAutoRate(name="autorate",method="post",action="/autorate")
+    input(type="hidden" name="subscores" value="#{bestTrip.subscores}")
+    input(type="hidden" name="overallScore" value="#{bestTrip.overallScore}")
+    input(type="hidden" name="mood" value="#{mood}")
+    button#btnSubmit(type="submit") Auto-Rate
 
   

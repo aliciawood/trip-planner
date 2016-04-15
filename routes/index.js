@@ -14,9 +14,23 @@ router.post('/addinput', function(req, res) {
     var inspiringSet = new InspiringSet(req.db, req.body.budget, req.body.mood, res);
 
 });
-// router.post('',function(req,res){
-//     inspiringSet.updateWeights();
-// });
+router.post('/autorate',function(req,res){
+
+    console.log("********POSTED AUTORATE: ");
+    var subscores = req.body.subscores;
+    console.log("subscores: ",subscores);
+    var overallScore = req.body.overallScore;
+    console.log("overallScore: ",overallScore);
+    var mood = req.body.mood;
+    console.log("mood: ",mood);
+
+
+    //update weights
+    //     inspiringSet.updateWeights();
+
+
+    res.render('finishedrating', { title: 'Finished Rating!'})
+});
 
 router.get('/displayGoogleMaps', function(req, res) {
     //var city = req.session.city;
