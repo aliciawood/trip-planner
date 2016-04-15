@@ -102,6 +102,11 @@ Trip.prototype.calculatePriceScore = function(budget){
 
 }
 
+Trip.prototype.setLocation = function(lat, long){
+	this.lat = lat;
+	this.long = long;
+}
+
 
 
 

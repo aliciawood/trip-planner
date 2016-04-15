@@ -41,6 +41,8 @@ function Restaurant(trip, mood, city, state, restaurant){
             curr.price = 30;
         else if(priceLevel == 4)
             curr.price = 60;
+        
+        curr.geometry = response.result.geometry.location;
 	        
         trip.loadedRestaurants++;
     	trip.complete();

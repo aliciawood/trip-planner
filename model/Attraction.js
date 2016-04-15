@@ -51,6 +51,8 @@ function Attraction(trip, mood, city, state, attraction){
 
 
         curr.types = response.result.types;
+        curr.geometry = response.result.geometry.location;
+
     	trip.loadedAttractions++;
     	trip.complete();
         
