@@ -17,8 +17,15 @@ function InspiringSet(db, budget, mood, res){
 
 	this.tripPoolsCompleted = 0;
 
-
-	this.weights  = {
+	if(this.mood == "adventurous")
+		this.weights = globalWeights["adventurous"];
+	else if(this.mood == "relaxing")
+		this.weights = globalWeights["relaxing"];
+	else if(this.mood == "romantic")
+		this.weights = globalWeights["romantic"];
+	else
+		this.weights = globalWeights["happy"];
+	/*this.weights  = {
 		"location": 1,
 		"restMood":1,
 		"attrMood":1,
@@ -28,7 +35,7 @@ function InspiringSet(db, budget, mood, res){
 		"attrRating":1,
 		"hotelRating":1,
 		"overallRating":1
-	}
+	}*/
 
 	//get synonyms for mood - store in this
 	this.getRelatedWordsForMood();    
