@@ -72,7 +72,6 @@ TripPool.prototype.radarSearch = function(){
     //placeSearch(parameters, function (error, response) {
      radarSearch(parameters, function (error, response) {
         if (error) throw error;
-        // assert.notEqual(response.results.length, 0, "Place search must not return 0 results");
         for(var i in response.results){
         	var newHotel = new Hotel(curr,curr.mood, curr.city, curr.state, response.results[i]);
         	curr.allPossibleHotels.push(newHotel);
@@ -98,8 +97,6 @@ TripPool.prototype.findAttractions = function(radarSearch, locationParam) {
 
 	    radarSearch(parameters, function (error, response) {
 	        if (error) throw error;
-	        // if(response.results.length == 0) console.log("didn't find", attractions[i]);
-	        //assert.notEqual(response.results.length, 0, "Place search must not return 0 results");
 	        for(var i in response.results){
 	        	var newAttraction = new Attraction(curr,curr.mood, curr.city, curr.state, response.results[i]);
 	        	curr.allPossibleAttractions.push(newAttraction);
@@ -147,9 +144,6 @@ TripPool.prototype.filterAttractions = function() {
 }
 
 TripPool.prototype.complete = function(){
-	// console.log("REST: ",this.loadedRestaurants,"/",this.allPossibleRestaurants.length);
-	// console.log("Attractions: ",this.loadedAttractions,"/",this.allPossibleAttractions.length);
-	// console.log("Hotels: ",this.loadedHotels,"/",this.allPossibleHotels.length);
 	if((this.loadedRestaurants == this.allPossibleRestaurants.length) && (this.loadedHotels == this.allPossibleHotels.length) && (this.loadedAttractions == this.allPossibleAttractions.length)){
 		if(this.allPossibleRestaurants.length!=0 && this.allPossibleAttractions.length!=0 && this.allPossibleHotels.length!=0) {
 			this.filterAttractions();
@@ -170,7 +164,6 @@ TripPool.prototype.generateTrip = function(){
 	for(var g = 0; g < generations; g++) {
 		population.evolve();
 		population.survivalOfTheFittest();
-		//console.log("AFTER EVOLVE: ",population.size());
 	}
 
 	var bestGATrip = population.getBestTrip(this);			//bestTrip INSTANCEOF GeneticAlgorithm
@@ -179,13 +172,6 @@ TripPool.prototype.generateTrip = function(){
 	console.log("*****GOT A BEST TRIP");
 	this.inspiringSet.findOverallBestTrip();
 
-	//figure out how to split up budget between attractions and lodging.....
-	// var moneyForAttractions = this.budget/2.0;
-	// var moneyForHotels = this.budget/2.0;
-
-	// return bestTrip;
-
-	//TODO send this best trip back to inspiring set, pick the best of the three and render
 
 }
 TripPool.prototype.getBestTrip = function(){

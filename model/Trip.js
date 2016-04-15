@@ -10,11 +10,12 @@ function Trip(state, city, culturalInfo, inspiringSet){
 	this.attractions = [];
 	this.subscores = [];
 	this.overallScore = -1;
+	this.costOfTrip = -1;
 }
 
 Trip.prototype.getFitness = function() {
 	var score = 0;
-	var overallCost = 0;
+	this.costOfTrip = 0;
 	var overallRating = 0;
 
 	var locationMoodSubScore = this.inspiringSet.calculateMoodScore(undefined,this.culturalInfo);
@@ -31,7 +32,7 @@ Trip.prototype.getFitness = function() {
 		//individual restaurant score
 		var currRestaurant = this.restaurants[r];
 		restaurantSubscore += this.inspiringSet.calculateMoodScore(currRestaurant.name, currRestaurant.reviewText)
-		overallCost += currRestaurant.price;
+		this.costOfTrip += currRestaurant.price;
 		restRating += currRestaurant.rating;
 	}
 
@@ -48,7 +49,7 @@ Trip.prototype.getFitness = function() {
 		//individual attractions score
 		var currAttraction = this.attractions[r];
 		attractionSubscore += this.inspiringSet.calculateMoodScore(currAttraction.name,currAttraction.reviewText);
-		overallCost += currAttraction.price;
+		this.costOfTrip += currAttraction.price;
 		attrRating += currAttraction.rating;
 	}
 	var attractionMoodScore = this.inspiringSet.weights[2] * attractionSubscore;
@@ -64,12 +65,12 @@ Trip.prototype.getFitness = function() {
 	var hotelSubscore = this.inspiringSet.calculateMoodScore(hotel.name,hotel.reviewText);
 	score += (this.inspiringSet.weights[3] * hotelSubscore);
 	this.subscores.push(hotelSubscore);
-	overallCost += (hotel.price * 4);
+	this.costOfTrip += (hotel.price * 4);
 	var avgHotelRating = hotel.rating;
 	overallRating += (hotel.rating*4);
 
 	var budget = this.inspiringSet.budget;
-	var priceSubscore = this.calculatePriceScore(budget, overallCost);
+	var priceSubscore = this.calculatePriceScore(budget);
 	var priceScore = this.inspiringSet.weights[4]* priceSubscore;
 	score += priceScore;
 	this.subscores.push(priceSubscore);
@@ -92,8 +93,8 @@ Trip.prototype.getFitness = function() {
 	return score;
 };
 
-Trip.prototype.calculatePriceScore = function(budget, overallCost){
-	var squaredDiff = Math.pow((budget - overallCost),2);
+Trip.prototype.calculatePriceScore = function(budget){
+	var squaredDiff = Math.pow((budget - this.costOfTrip),2);
 	var divided = squaredDiff/10000;
 	var subtracted = 100 - divided;
 	var dividedAgain = subtracted/100;

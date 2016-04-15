@@ -14,26 +14,26 @@ router.post('/addinput', function(req, res) {
 
     var inspiringSet = new InspiringSet(req.db, req.body.budget, req.body.mood, res);
 
+    // res.render('tripoutput', {
+    //     "mood":req.body.mood,
+    // });
+
 });
 router.post('/autorate',function(req,res){
 
     console.log("********POSTED AUTORATE: ");
     var subscores = req.body.subscores;
-    console.log("subscores: ",subscores);
     var overallScore = req.body.overallScore;
-    console.log("overallScore: ",overallScore);
     var mood = req.body.mood;
-    console.log("mood: ",mood);
     var weights = req.body.weights;
-    console.log("weights: ",weights);
 
 
-    var perceptron = new Perceptron(subscores,overallScore, weights, mood);
+    var userRatings = undefined;
+    if(req.body.radioGroup1 !=undefined)
+        userRatings = [req.body.radioGroup1, req.body.radioGroup2, req.body.radioGroup3, req.body.radioGroup4, req.body.radioGroup5, req.body.radioGroup6];
+    
+    var perceptron = new Perceptron(subscores,overallScore, weights, mood, userRatings);
     perceptron.run();
-
-    //update weights
-    //     inspiringSet.updateWeights();
-
 
     res.render('finishedrating', { title: 'Finished Rating!'})
 });

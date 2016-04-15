@@ -1,7 +1,8 @@
 extends layout
 block content
+
   h1.
-    !{mood} trip to !{city}, !{state} with $!{money}
+    !{mood} trip to !{city}, !{state} with $!{moneySpent} out of $!{money}
 
   h2.
     Restaurants
@@ -22,66 +23,84 @@ block content
     each hotel, i in hotellist
       li= hotel.name
 
-  |How well did the overall trip match your mood?     
-  input#Element1(type="radio", value='1' name="RadioGroup", checked=false)
-  |1  
-  input#Element2(type="radio", name="RadioGroup", checked=true)
-  |2  
-  input#Element3(type="radio", name="RadioGroup", checked=false)
-  |3  
-  input#Element4(type="radio", name="RadioGroup", checked=false)
-  |4  
-  input#Element5(type="radio", name="RadioGroup", checked=false)
-  |5  
-  br
-  |How well did the restaurants match your mood?      
-  input#Element1(type="radio", value='1' name="RadioGroup", checked=false)
-  |1  
-  input#Element2(type="radio", name="RadioGroup", checked=true)
-  |2  
-  input#Element3(type="radio", name="RadioGroup", checked=false)
-  |3  
-  input#Element4(type="radio", name="RadioGroup", checked=false)
-  |4  
-  input#Element5(type="radio", name="RadioGroup", checked=false)
-  |5
-  br  
-  |How well did the hotel match your mood?      
-  input#Element1(type="radio", value='1' name="RadioGroup", checked=false)
-  |1  
-  input#Element2(type="radio", name="RadioGroup", checked=true)
-  |2  
-  input#Element3(type="radio", name="RadioGroup", checked=false)
-  |3  
-  input#Element4(type="radio", name="RadioGroup", checked=false)
-  |4  
-  input#Element5(type="radio", name="RadioGroup", checked=false)
-  |5 
-  br 
-  |How well did the attractions match your mood?
-  input#Element1(type="radio", value='1' name="RadioGroup", checked=false)
-  |1  
-  input#Element2(type="radio", name="RadioGroup", checked=true)
-  |2  
-  input#Element3(type="radio", name="RadioGroup", checked=false)
-  |3  
-  input#Element4(type="radio", name="RadioGroup", checked=false)
-  |4  
-  input#Element5(type="radio", name="RadioGroup", checked=false)
-  |5  
-  br
-  |How well did the price match your budget?
-  input#Element1(type="radio", value='1' name="RadioGroup", checked=false)
-  |1  
-  input#Element2(type="radio", name="RadioGroup", checked=true)
-  |2  
-  input#Element3(type="radio", name="RadioGroup", checked=false)
-  |3  
-  input#Element4(type="radio", name="RadioGroup", checked=false)
-  |4  
-  input#Element5(type="radio", name="RadioGroup", checked=false)
-  |5
-
+  form#formSelfRate(name="selfrate",method="post",action="/autorate")
+    |How !{mood} was your trip?     
+    input#inputBudget(type="radio", value="1", name="radioGroup1") 
+    |1  
+    input#inputBudget(type="radio", value="2", name="radioGroup1") 
+    |2
+    input#inputBudget(type="radio", value="3", name="radioGroup1") 
+    |3
+    input#inputBudget(type="radio", value="4", name="radioGroup1") 
+    |4
+    input#inputBudget(type="radio", value="5", name="radioGroup1") 
+    |5  
+    br
+    |How were the restaurants?
+    input#Element1(type="radio", value="1", name="radioGroup2")
+    |1  
+    input#Element2(type="radio", value="2", name="radioGroup2")
+    |2  
+    input#Element3(type="radio", value="3",name="radioGroup2")
+    |3  
+    input#Element4(type="radio", value="4",name="radioGroup2")
+    |4  
+    input#Element5(type="radio", value="5",name="radioGroup2")
+    |5
+    br  
+    |How were the attractions?
+    input#Element1(type="radio", value="1", name="radioGroup3")
+    |1  
+    input#Element2(type="radio", value="2",name="radioGroup3")
+    |2  
+    input#Element3(type="radio", value="3",name="radioGroup3")
+    |3  
+    input#Element4(type="radio", value="4",name="radioGroup3")
+    |4  
+    input#Element5(type="radio", value="5",name="radioGroup3")
+    |5 
+    br 
+    |How was the hotel?      
+    input#Element1(type="radio", value="1", name="radioGroup4")
+    |1  
+    input#Element2(type="radio", value="2",name="radioGroup4")
+    |2  
+    input#Element3(type="radio", value="3",name="radioGroup4")
+    |3  
+    input#Element4(type="radio", value="4",name="radioGroup4")
+    |4  
+    input#Element5(type="radio", value="5",name="radioGroup4")
+    |5  
+    br
+    |How well did the price match your budget?
+    input#Element1(type="radio", value="1", name="radioGroup5")
+    |1  
+    input#Element2(type="radio", value="2",name="radioGroup5")
+    |2  
+    input#Element3(type="radio", value="3",name="radioGroup5")
+    |3  
+    input#Element4(type="radio", value="4", name="radioGroup5")
+    |4  
+    input#Element5(type="radio", value="5",name="radioGroup5")
+    |5
+    br 
+    |How !{mood} was the location?  
+    input#Element1(type="radio", value="1", name="radioGroup6")
+    |1  
+    input#Element2(type="radio", value="2",name="radioGroup6")
+    |2  
+    input#Element3(type="radio",value="3", name="radioGroup6")
+    |3  
+    input#Element4(type="radio", value="4",name="radioGroup6")
+    |4  
+    input#Element5(type="radio", value="5",name="radioGroup6")
+    |5  
+    br
+    input(type="hidden" name="subscores" value="#{bestTrip.subscores}")
+    input(type="hidden" name="overallScore" value="#{bestTrip.overallScore}")
+    input(type="hidden" name="mood" value="#{mood}")
+    input(type="hidden" name="weights" value="#{weights}")
+    button#btnSubmit(type="submit") Rate this Trip!
 
   form#formAutoRate(name="autorate",method="post",action="/autorate")
     input(type="hidden" name="subscores" value="#{bestTrip.subscores}")
@@ -89,5 +108,3 @@ block content
     input(type="hidden" name="mood" value="#{mood}")
     input(type="hidden" name="weights" value="#{weights}")
     button#btnSubmit(type="submit") Auto-Rate
-
-  
