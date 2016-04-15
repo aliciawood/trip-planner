@@ -18,7 +18,7 @@ Trip.prototype.getFitness = function() {
 	var overallRating = 0;
 
 	var locationMoodSubScore = this.inspiringSet.calculateMoodScore(undefined,this.culturalInfo);
-	var locationMoodScore = (this.inspiringSet.weights["location"] * locationMoodSubScore);
+	var locationMoodScore = (this.inspiringSet.weights[0] * locationMoodSubScore);
 	this.subscores.push(locationMoodSubScore);
 	score += locationMoodScore;
 
@@ -35,7 +35,7 @@ Trip.prototype.getFitness = function() {
 		restRating += currRestaurant.rating;
 	}
 
-	var restaurantMoodScore = (this.inspiringSet.weights["restMood"] * restaurantSubscore);
+	var restaurantMoodScore = (this.inspiringSet.weights[1] * restaurantSubscore);
 	this.subscores.push(restaurantSubscore);
 	score += restaurantMoodScore;
 	overallRating += restRating;
@@ -51,7 +51,7 @@ Trip.prototype.getFitness = function() {
 		overallCost += currAttraction.price;
 		attrRating += currAttraction.rating;
 	}
-	var attractionMoodScore = this.inspiringSet.weights["attrMood"] * attractionSubscore;
+	var attractionMoodScore = this.inspiringSet.weights[2] * attractionSubscore;
 	this.subscores.push(attractionSubscore);
 	score += attractionMoodScore;
 
@@ -62,7 +62,7 @@ Trip.prototype.getFitness = function() {
 	
 	var hotel = this.hotels[0];			//TODO change soon
 	var hotelSubscore = this.inspiringSet.calculateMoodScore(hotel.name,hotel.reviewText);
-	score += (this.inspiringSet.weights["hotelMood"] * hotelSubscore);
+	score += (this.inspiringSet.weights[3] * hotelSubscore);
 	this.subscores.push(hotelSubscore);
 	overallCost += (hotel.price * 4);
 	var avgHotelRating = hotel.rating;
@@ -70,7 +70,7 @@ Trip.prototype.getFitness = function() {
 
 	var budget = this.inspiringSet.budget;
 	var priceSubscore = this.calculatePriceScore(budget, overallCost);
-	var priceScore = this.inspiringSet.weights["price"]* priceSubscore;
+	var priceScore = this.inspiringSet.weights[4]* priceSubscore;
 	score += priceScore;
 	this.subscores.push(priceSubscore);
 
@@ -79,13 +79,13 @@ Trip.prototype.getFitness = function() {
 	var avgAttrRating = attrRating/8;
 
 
-	score += this.inspiringSet.weights["restRating"] * (avgRestRating/10.0);
+	score += this.inspiringSet.weights[5] * (avgRestRating/10.0);
 	this.subscores.push((avgRestRating/10.0));
-	score += this.inspiringSet.weights["attrRating"] * (avgAttrRating/10.0); 
+	score += this.inspiringSet.weights[6] * (avgAttrRating/10.0); 
 	this.subscores.push((avgAttrRating/10.0));
-	score += this.inspiringSet.weights["hotelRating"] * (avgHotelRating/10.0);
+	score += this.inspiringSet.weights[7] * (avgHotelRating/10.0);
 	this.subscores.push((avgHotelRating/10.0));
-	score += this.inspiringSet.weights["overallRating"] * (avgRating/10.0);
+	score += this.inspiringSet.weights[8] * (avgRating/10.0);
 	this.subscores.push((avgRating/10.0));
 
 	this.overallScore = score;

@@ -23,7 +23,8 @@ router.post('/autorate',function(req,res){
     console.log("overallScore: ",overallScore);
     var mood = req.body.mood;
     console.log("mood: ",mood);
-
+    var weights = req.body.weights;
+    console.log("weights: ",weights);
 
     //update weights
     //     inspiringSet.updateWeights();

@@ -169,7 +169,8 @@ InspiringSet.prototype.findOverallBestTrip = function(){
 	        "state":bestTrip.state,
 	        "money":this.budget,
 	        "mood":this.mood,
-	        "bestTrip":bestTrip
+	        "bestTrip":bestTrip,
+	        "weights":this.weights
 	    });
 	}
 }
