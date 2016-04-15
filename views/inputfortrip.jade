@@ -3,10 +3,11 @@ extends layout
 block content
   h1= title
   form#formGetTripInfo(name="addinput",method="post",action="/addinput")
-    input#inputBudget(type="number", placeholder="budget", name="budget")
-    select(name="mood")
+    |$ 
+    input#inputSubmit(type="number", placeholder="budget", name="budget")
+    select#inputSubmit(name="mood")
       option happy
       option romantic
       option adventurous
       option relaxing
-    button#btnSubmit(type="submit") submit
+    button#btnSubmit1(type="submit") submit
