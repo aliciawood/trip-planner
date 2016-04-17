@@ -14,10 +14,6 @@ router.post('/addinput', function(req, res) {
 
     var inspiringSet = new InspiringSet(req.db, req.body.budget, req.body.mood, res);
 
-    // res.render('tripoutput', {
-    //     "mood":req.body.mood,
-    // });
-
 });
 router.post('/autorate',function(req,res){
 

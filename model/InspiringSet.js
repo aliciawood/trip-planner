@@ -107,8 +107,8 @@ InspiringSet.prototype.generateTopThreeLocations = function(){
 	        sorted[sorted.length] = key;
 	    sorted.sort(function(a, b){return b-a});
 
-	    var rand1 = Math.floor((Math.random() * sorted.length) + 2);
-	    var rand2 = Math.floor((Math.random() * sorted.length) + 2);
+	    var rand1 = Math.floor(Math.random() * (sorted.length-2) + 2);
+	    var rand2 = Math.floor(Math.random() * (sorted.length-2) + 2);
 	    //get the top three
 	    //then get them from the dictionary
 	    var thirdState = scoreToState[sorted[0]][0];
@@ -144,7 +144,7 @@ InspiringSet.prototype.findOverallBestTrip = function(){
 		console.log("FIND BEST ONE!");
 		this.tripPoolsCompleted = 0;
 		//go through the stateToTripPool 
-		var maxScore = -1;
+		var maxScore = -999999999999999999;
 		var bestTrip = null;
 		for(var key in this.stateToTripPool){
 			var currBestTrip = this.stateToTripPool[key].getBestTrip();

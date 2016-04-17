@@ -15,10 +15,11 @@ var routes = require('./routes/index');
 var app = express();
 
 globalWeights = {
+  //location, restMood, attrMood, hotelMood, price, restRating, attrRating, hotelRating,  overallRating
   "adventurous": [ 0.3, 0.5, 1, 0.3, 0.1, 0.5, 1, 0.3, 1],
-  "relaxing":[1,1,1,1,1,1,1,1,1],
-  "romantic":[1,1,1,1,0.5,1,1,1,1],
-  "happy":[1,1,1,1,0.5,1,1,1,1]
+  "relaxing":[1,1,.7,.8,.4,.7,.6,1,.8],
+  "romantic":[1,.8,.3,1,0.4,1,.3,1,.9],
+  "happy":[.6,.7,.8,.8,.5,.7,.7,.5,.6]
 };
 
 // view engine setup
