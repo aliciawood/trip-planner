@@ -21,17 +21,17 @@ function Perceptron(tripScores, tripOverallScore, tripWeights, mood, userRatings
             4 : [.7,.5,.7,.5,.7,.7,.8,.6,.6],
             5 : [.8,.5,1,.7,.9,.6,1,.7,.6]
         }
-        
+
         var rand = Math.floor((Math.random() * 5) + 1);
         this.peopleWeights = this.peopleWeightsDicionary[rand];
     }
     else{
-        var overallTrip = userRatings[0]*.2;
-        var restaurantScore = userRatings[1]*.2;
-        var attractionScore = userRatings[2]*.2;
-        var hotelScore = userRatings[3]*.2;
-        var priceScore = userRatings[4]*.2;
-        var locationScore = userRatings[5]*.2;
+        var overallTrip = (6-userRatings[0])*.2;
+        var restaurantScore = (6-userRatings[1])*.2;
+        var attractionScore = (6-userRatings[2])*.2;
+        var hotelScore = (6-userRatings[3])*.2;
+        var priceScore = (6-userRatings[4])*.2;
+        var locationScore = (6-userRatings[5])*.2;
         this.peopleWeights = [locationScore,restaurantScore,attractionScore,hotelScore,priceScore,restaurantScore,attractionScore,hotelScore,overallTrip];
     }
     console.log("PEOPLE WEIGHTS: ",this.peopleWeights);
